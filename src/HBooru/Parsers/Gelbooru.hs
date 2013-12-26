@@ -123,3 +123,7 @@ parseImage = hasName "post" >>> proc x → do
       , preview_width = read preview_width
       , preview_height = read preview_height
       }
+
+
+pImages :: XMLResponse → [GelbooruImage]
+pImages = parseImages

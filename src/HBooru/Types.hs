@@ -37,7 +37,7 @@ instance BResponse JSONResponse where
 
 class BImage i where
 
-class (BImage i, BResponse r) ⇒ BParser p r i | p r → i where
+class (BImage i, BResponse r) ⇒ BParser p r i | r i → p where
   hardLimit ∷ p → Limit
   parseImages ∷ r → [i]
   tagURL ∷ Tag t ⇒ r → [t] → String
