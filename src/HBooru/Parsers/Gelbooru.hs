@@ -23,33 +23,33 @@ type GelbooruTag = String
 instance Tag GelbooruTag where
   showTag = show
 
-data GelbooruImage = GelbooruImage { height :: Integer
-                                   , score :: Integer
-                                   , file_url :: String
-                                   , parent_id :: Maybe Integer
-                                   , sample_url :: String
-                                   , sample_width :: Integer
-                                   , sample_height :: Integer
-                                   , preview_url :: String
-                                   , rating :: GelbooruRating
-                                   , tags :: [GelbooruTag]
-                                   , id :: Integer
-                                   , width :: Integer
-                                   , change :: String
-                                   , md5 :: String
-                                   , creator_id :: Integer
-                                   , has_children :: Bool
-                                   , created_at :: String
-                                   , status :: String
-                                   , source :: String
-                                   , has_notes :: Bool
-                                   , has_comments :: Bool
-                                   , preview_width :: Integer
-                                   , preview_height :: Integer
+data GelbooruImage = GelbooruImage { height ∷ Integer
+                                   , score ∷ Integer
+                                   , file_url ∷ String
+                                   , parent_id ∷ Maybe Integer
+                                   , sample_url ∷ String
+                                   , sample_width ∷ Integer
+                                   , sample_height ∷ Integer
+                                   , preview_url ∷ String
+                                   , rating ∷ GelbooruRating
+                                   , tags ∷ [GelbooruTag]
+                                   , id ∷ Integer
+                                   , width ∷ Integer
+                                   , change ∷ String
+                                   , md5 ∷ String
+                                   , creator_id ∷ Integer
+                                   , has_children ∷ Bool
+                                   , created_at ∷ String
+                                   , status ∷ String
+                                   , source ∷ String
+                                   , has_notes ∷ Bool
+                                   , has_comments ∷ Bool
+                                   , preview_width ∷ Integer
+                                   , preview_height ∷ Integer
                                    } deriving Show
 
-data SampleGelbooruImage = SampleGelbooruImage { sHeight, sWidth :: Integer
-                                               , sLink :: String
+data SampleGelbooruImage = SampleGelbooruImage { sHeight, sWidth ∷ Integer
+                                               , sLink ∷ String
                                                } deriving Show
 
 data GelbooruImageParser
@@ -73,8 +73,8 @@ parseTags = words
 parseBool "false" = False
 parseBool "true" = True
 
-parseImage :: ArrowXml cat => cat XmlTree GelbooruImage
-parseImage = hasName "post" >>> proc x -> do
+parseImage ∷ ArrowXml cat => cat XmlTree GelbooruImage
+parseImage = hasName "post" >>> proc x → do
   height <- getAttrValue "height" -< x
   score <- getAttrValue "score" -< x
   file_url <- getAttrValue "file_url" -< x
