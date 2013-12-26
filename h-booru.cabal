@@ -25,4 +25,4 @@ library
     HBooru
     HBooru.Types
   -- other-modules:
-  build-depends:       base >=4.6 && <4.7, HTTP
+  build-depends:       base >=4.6 && <4.7, HTTP, xml-conduit
