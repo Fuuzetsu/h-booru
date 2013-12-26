@@ -7,17 +7,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE Arrows #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 module HBooru.Parsers.Gelbooru where
 
 import Control.Applicative hiding (many)
-import Control.Monad.Trans.Resource
 import Data.List
 import HBooru.Types
-import Data.Conduit
-import Data.Text (Text, unpack)
 import Text.Read (readMaybe)
-import Data.XML.Types
-import Text.XML.Stream.Parse
+import Text.XML.HXT.Core
 
 data GelbooruRating = Safe | Questionable | Explicit deriving (Show, Eq)
 type GelbooruTag = String
@@ -60,7 +58,7 @@ instance BImage GelbooruImage where
 
 instance BParser GelbooruImageParser XMLResponse GelbooruImage where
   hardLimit _ = Limit 100
-  parseImages r = let x = getResponse r in []
+  parseImages = runLA (xreadDoc >>> getChildren >>> parseImage) . getResponse
   tagURL _ ts =
     let tags = intercalate "+" $ map showTag ts
     in "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags="
@@ -75,71 +73,53 @@ parseTags = words
 parseBool "false" = False
 parseBool "true" = True
 
-xmlParseImage ∷ MonadThrow m ⇒ ConduitM Event o m (Maybe GelbooruImage)
-xmlParseImage =
-  tagName "post"
-  (((,,,,,,,,,,,,,,,,,,,,,,) <$>
-    r "height"
-    <*> r "score"
-    <*> r "file_url"
-    <*> r "parent_id"
-    <*> r "sample_url"
-    <*> r "sample_width"
-    <*> r "sample_height"
-    <*> r "preview_url"
-    <*> r "rating"
-    <*> r "tags"
-    <*> r "id"
-    <*> r "width"
-    <*> r "change"
-    <*> r "md5"
-    <*> r "creator_id"
-    <*> r "has_children"
-    <*> r "created_at"
-    <*> r "status"
-    <*> r "source"
-    <*> r "has_notes"
-    <*> r "has_comments"
-    <*> r "preview_width"
-    <*> r "preview_height")
-   <* ignoreAttrs) $
-  \(height, score, file_url, parent_id, sample_url, sample_width, sample_height,
-    preview_url, rating, tags, id, width, change, md5, creator_id, has_children,
-    created_at, status, source, has_notes, has_comments, preview_width,
-    preview_height) → do
-    return $ GelbooruImage
-      { height = read $ unpack height
-      , score = read $ unpack score
-      , file_url = unpack file_url
-      , parent_id = readMaybe $ unpack parent_id
-      , sample_url = unpack sample_url
-      , sample_width = read $ unpack sample_width
-      , sample_height = read $ unpack sample_height
-      , preview_url = unpack preview_url
-      , rating = parseRating $ unpack rating
-      , tags = parseTags $ unpack tags
-      , HBooru.Parsers.Gelbooru.id = read $ unpack id
-      , width = read $ unpack width
-      , change = unpack change
-      , md5 = unpack md5
-      , creator_id = read $ unpack creator_id
-      , has_children = parseBool $ unpack has_children
-      , created_at = unpack created_at
-      , status = unpack status
-      , source = unpack source
-      , has_notes = parseBool $ unpack has_notes
-      , has_comments = parseBool $ unpack has_comments
-      , preview_width = read $ unpack preview_width
-      , preview_height = read $ unpack preview_height
+parseImage :: ArrowXml cat => cat XmlTree GelbooruImage
+parseImage = hasName "post" >>> proc x -> do
+  height <- getAttrValue "height" -< x
+  score <- getAttrValue "score" -< x
+  file_url <- getAttrValue "file_url" -< x
+  parent_id <- getAttrValue "parent_id" -< x
+  sample_url <- getAttrValue "sample_url" -< x
+  sample_width <- getAttrValue "sample_width" -< x
+  sample_height <- getAttrValue "sample_height" -< x
+  preview_url <- getAttrValue "preview_url" -< x
+  rating <- getAttrValue "rating" -< x
+  tags <- getAttrValue "tags" -< x
+  id <- getAttrValue "id" -< x
+  width <- getAttrValue "width" -< x
+  change <- getAttrValue "change" -< x
+  md5 <- getAttrValue "md5" -< x
+  creator_id <- getAttrValue "creator_id" -< x
+  has_children <- getAttrValue "has_children" -< x
+  created_at <- getAttrValue "created_at" -< x
+  status <- getAttrValue "status" -< x
+  source <- getAttrValue "source" -< x
+  has_notes <- getAttrValue "has_notes" -< x
+  has_comments <- getAttrValue "has_comments" -< x
+  preview_width <- getAttrValue "preview_width" -< x
+  preview_height <- getAttrValue "preview_height" -< x
+  returnA -< GelbooruImage
+      { height = read height
+      , score = read score
+      , file_url = file_url
+      , parent_id = readMaybe parent_id
+      , sample_url = sample_url
+      , sample_width = read sample_width
+      , sample_height = read sample_height
+      , preview_url = preview_url
+      , rating = parseRating rating
+      , tags = parseTags tags
+      , HBooru.Parsers.Gelbooru.id = read id
+      , width = read width
+      , change = change
+      , md5 = md5
+      , creator_id = read creator_id
+      , has_children = parseBool has_children
+      , created_at = created_at
+      , status = status
+      , source = source
+      , has_notes = parseBool has_notes
+      , has_comments = parseBool has_comments
+      , preview_width = read preview_width
+      , preview_height = read preview_height
       }
-  where
-    r = requireAttr
-
-
-xmlParseImages ∷ MonadThrow m ⇒ ConduitM Event o m (Maybe [GelbooruImage])
-xmlParseImages = tagName "posts" ignoreAttrs . const $ many xmlParseImage
-
--- test :: IO [GelbooruImage]
--- test = do
---   runResourceT $
---     parseFile def "/tmp/shana.xml" $$ force "posts required" xmlParseImages
