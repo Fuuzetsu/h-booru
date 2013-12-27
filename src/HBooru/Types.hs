@@ -7,20 +7,23 @@ module HBooru.Types where
 
 class DataFormat a where
 
-data XML = XML
-data JSON = JSON
+data XML = XML deriving (Show, Eq)
+data JSON = JSON deriving (Show, Eq)
 
 instance DataFormat XML where
 instance DataFormat JSON where
 
-class Response r ⇒ ToResponse x r | x → r where
+class Response r ⇒ CoerceResponse x r | x → r, r → x where
   toResponse ∷ x → String → r
+  fromResponse ∷ r → x
 
-instance ToResponse XML XMLResponse where
+instance CoerceResponse XML XMLResponse where
   toResponse _ = XMLResponse
+  fromResponse _ = XML
 
-instance ToResponse JSON JSONResponse where
+instance CoerceResponse JSON JSONResponse where
   toResponse _ = JSONResponse
+  fromResponse _ = JSON
 
 class (Site s, Response r) ⇒ PostParser s r where
   type ImageTy s r
