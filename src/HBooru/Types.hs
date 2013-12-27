@@ -1,50 +1,55 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE LambdaCase #-}
-module HBooru.Types
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FunctionalDependencies #-}
+module HBooru.Types where
 
-       where
+class DataFormat a where
 
-import Control.Applicative
-import Data.List
-import Network.HTTP
-import Network.HTTP.Base
-import Network.HTTP.Stream hiding (simpleHTTP)
-import Text.Read
-import Text.XML.Stream.Parse
+data XML = XML
+data JSON = JSON
+
+instance DataFormat XML where
+instance DataFormat JSON where
+
+class Response r ⇒ ToResponse x r | x → r where
+  toResponse ∷ x → String → r
+
+instance ToResponse XML XMLResponse where
+  toResponse _ = XMLResponse
+
+instance ToResponse JSON JSONResponse where
+  toResponse _ = JSONResponse
+
+class (Site s, Response r) ⇒ PostParser s r where
+  type ImageTy s r
+  parseResponse ∷ s → r → [ImageTy s r]
+
+class (Site s, Response r) ⇒ Counted s r where
+  parseCount ∷ s → r → Integer
+
+class (Site s, DataFormat r) ⇒ Postable s r where
+  postUrl ∷ Tag t ⇒ s → [t] → String
+
+class Site s where
+  hardLimit ∷ s → Maybe Limit
 
 data Rating = Safe | Questionable | Explicit deriving (Show, Eq)
 
 class Show a ⇒ Tag a where
   showTag ∷ a → String
 
-data Limit = NoLimit | Limit Integer
+data Limit = NoLimit | Limit Integer deriving (Show, Eq)
 
-data XMLResponse = XMLResponse String
-data JSONResponse = JSONResponse String
+data XMLResponse = XMLResponse String deriving Show
+data JSONResponse = JSONResponse String  deriving Show
 
-data Hole
-
-class BResponse r where
+class Response r where
   getResponse ∷ r → String
 
-instance BResponse XMLResponse where
+instance Response XMLResponse where
   getResponse (XMLResponse x) = x
 
-instance BResponse JSONResponse where
+instance Response JSONResponse where
   getResponse (JSONResponse x) = x
-
-class BImage i where
-
-class BParser p r where
-
-class BParser p r ⇒ BCount p r | r → p where
-  parseCount ∷ r → Integer
-
-class (BImage i, BResponse r) ⇒ BImageParser p r i | r i → p where
-  hardLimit ∷ p → Limit
-  parseImages ∷ r → [i]
-  tagURL ∷ Tag t ⇒ r → i → [t] → String
