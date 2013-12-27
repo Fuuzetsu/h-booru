@@ -9,10 +9,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE Arrows #-}
 {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE TypeFamilies #-}
 module HBooru.Parsers.Safebooru where
 
-import Control.Applicative hiding (many)
 import Data.List
+import Data.String
 import HBooru.Types
 import Text.Read (readMaybe)
 import Text.XML.HXT.Core
@@ -22,61 +23,57 @@ type SafebooruTag = String
 instance Tag SafebooruTag where
   showTag = show
 
-data SafebooruImage = SafebooruImage { height ∷ Integer
-                                     , score ∷ Integer
-                                     , file_url ∷ String
-                                     , parent_id ∷ Maybe Integer
-                                     , sample_url ∷ String
-                                     , sample_width ∷ Integer
-                                     , sample_height ∷ Integer
-                                     , preview_url ∷ String
-                                     , rating ∷ Rating
-                                     , tags ∷ [SafebooruTag]
-                                     , id ∷ Integer
-                                     , width ∷ Integer
-                                     , change ∷ String
-                                     , md5 ∷ String
-                                     , creator_id ∷ Integer
-                                     , has_children ∷ Bool
-                                     , created_at ∷ String
-                                     , status ∷ String
-                                     , source ∷ String
-                                     , has_notes ∷ Bool
-                                     , has_comments ∷ Bool
-                                     , preview_width ∷ Integer
-                                     , preview_height ∷ Integer
-                                     } deriving Show
+data SafebooruPost = SafebooruPost { height ∷ Integer
+                                   , score ∷ Integer
+                                   , file_url ∷ String
+                                   , parent_id ∷ Maybe Integer
+                                   , sample_url ∷ String
+                                   , sample_width ∷ Integer
+                                   , sample_height ∷ Integer
+                                   , preview_url ∷ String
+                                   , rating ∷ Rating
+                                   , tags ∷ [SafebooruTag]
+                                   , id ∷ Integer
+                                   , width ∷ Integer
+                                   , change ∷ String
+                                   , md5 ∷ String
+                                   , creator_id ∷ Integer
+                                   , has_children ∷ Bool
+                                   , created_at ∷ String
+                                   , status ∷ String
+                                   , source ∷ String
+                                   , has_notes ∷ Bool
+                                   , has_comments ∷ Bool
+                                   , preview_width ∷ Integer
+                                   , preview_height ∷ Integer
+                                   } deriving Show
 
-data SafebooruImageParser
+data Safebooru = Safebooru
 
-instance BParser SafebooruImageParser XMLResponse where
-
-instance BImage SafebooruImage where
-
-instance BImageParser SafebooruImageParser XMLResponse SafebooruImage where
-  hardLimit _ = Limit 100
-  parseImages = runLA (xreadDoc >>> getChildren >>> parseImage) . getResponse
-  tagURL _ _ ts =
+instance Postable Safebooru XML where
+  postUrl _ ts =
     let tags = intercalate "+" $ map showTag ts
     in "http://safebooru.org/index.php?page=dapi&s=post&q=index&limit=100&tags="
        ++ tags ++ "&pid=0"
 
-instance BCount SafebooruImageParser XMLResponse where
-  parseCount = read . head . runLA (xreadDoc >>> hasName "posts"
-                                    >>> getAttrValue "count") . getResponse
+instance Site Safebooru where
+  hardLimit _ = Limit 100
 
-
+parseRating :: (Eq a, IsString a) => a -> Rating
 parseRating "e" = Explicit
 parseRating "s" = Safe
 parseRating "q" = Questionable
 
+
+parseTags :: String -> [String]
 parseTags = words
 
+parseBool :: (Eq a, IsString a) => a -> Bool
 parseBool "false" = False
 parseBool "true" = True
 
-parseImage ∷ ArrowXml cat => cat XmlTree SafebooruImage
-parseImage = hasName "post" >>> proc x → do
+parsePost ∷ ArrowXml cat => cat XmlTree SafebooruPost
+parsePost = hasName "post" >>> proc x → do
   height <- getAttrValue "height" -< x
   score <- getAttrValue "score" -< x
   file_url <- getAttrValue "file_url" -< x
@@ -100,7 +97,7 @@ parseImage = hasName "post" >>> proc x → do
   has_comments <- getAttrValue "has_comments" -< x
   preview_width <- getAttrValue "preview_width" -< x
   preview_height <- getAttrValue "preview_height" -< x
-  returnA -< SafebooruImage
+  returnA -< SafebooruPost
       { height = read height
       , score = read score
       , file_url = file_url
@@ -126,5 +123,10 @@ parseImage = hasName "post" >>> proc x → do
       , preview_height = read preview_height
       }
 
-pCount :: XMLResponse -> Integer
-pCount = parseCount
+instance PostParser Safebooru XML where
+  type ImageTy Safebooru XML = SafebooruPost
+  parseResponse _ = runLA (xreadDoc /> parsePost) . getResponse
+
+instance Counted Safebooru XML where
+  parseCount _ = read . head . runLA (xreadDoc >>> hasName "posts"
+                                      >>> getAttrValue "count") . getResponse
