@@ -33,7 +33,7 @@ class (Site s, DataFormat r) ⇒ Counted s r where
   parseCount ∷ CoerceResponse r r' ⇒ s → r' → Integer
 
 class (Site s, DataFormat r) ⇒ Postable s r where
-  postUrl ∷ Tag t ⇒ s → [t] → String
+  postUrl ∷ Tag t ⇒ s → r → [t] → String
 
 class Site s where
   hardLimit ∷ s → Limit

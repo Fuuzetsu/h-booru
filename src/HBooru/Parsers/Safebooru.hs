@@ -21,7 +21,7 @@ import Text.XML.HXT.Core
 type SafebooruTag = String
 
 instance Tag SafebooruTag where
-  showTag = show
+  showTag = Prelude.id
 
 data SafebooruPost = SafebooruPost { height ∷ Integer
                                    , score ∷ Integer
@@ -51,7 +51,7 @@ data SafebooruPost = SafebooruPost { height ∷ Integer
 data Safebooru = Safebooru
 
 instance Postable Safebooru XML where
-  postUrl _ ts =
+  postUrl _ _ ts =
     let tags = intercalate "+" $ map showTag ts
     in "http://safebooru.org/index.php?page=dapi&s=post&q=index&limit=100&tags="
        ++ tags ++ "&pid=0"

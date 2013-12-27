@@ -21,7 +21,7 @@ import Text.XML.HXT.Core
 type GelbooruTag = String
 
 instance Tag GelbooruTag where
-  showTag = show
+  showTag = Prelude.id
 
 data GelbooruPost = GelbooruPost { height ∷ Integer
                                  , score ∷ Integer
@@ -51,7 +51,7 @@ data GelbooruPost = GelbooruPost { height ∷ Integer
 data Gelbooru = Gelbooru
 
 instance Postable Gelbooru XML where
-  postUrl _ ts =
+  postUrl _ _ ts =
     let tags = intercalate "+" $ map showTag ts
     in "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags="
        ++ tags ++ "&pid=0"
