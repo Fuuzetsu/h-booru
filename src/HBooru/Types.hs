@@ -16,6 +16,8 @@ import Network.HTTP.Stream hiding (simpleHTTP)
 import Text.Read
 import Text.XML.Stream.Parse
 
+data Rating = Safe | Questionable | Explicit deriving (Show, Eq)
+
 class Show a ⇒ Tag a where
   showTag ∷ a → String
 
@@ -45,4 +47,4 @@ class BParser p r ⇒ BCount p r | r → p where
 class (BImage i, BResponse r) ⇒ BImageParser p r i | r i → p where
   hardLimit ∷ p → Limit
   parseImages ∷ r → [i]
-  tagURL ∷ Tag t ⇒ r → [t] → String
+  tagURL ∷ Tag t ⇒ r → i → [t] → String
