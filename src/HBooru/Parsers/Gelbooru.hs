@@ -54,15 +54,22 @@ data SampleGelbooruImage = SampleGelbooruImage { sHeight, sWidth ∷ Integer
 
 data GelbooruImageParser
 
+instance BParser GelbooruImageParser XMLResponse where
+
 instance BImage GelbooruImage where
 
-instance BParser GelbooruImageParser XMLResponse GelbooruImage where
+instance BImageParser GelbooruImageParser XMLResponse GelbooruImage where
   hardLimit _ = Limit 100
   parseImages = runLA (xreadDoc >>> getChildren >>> parseImage) . getResponse
   tagURL _ ts =
     let tags = intercalate "+" $ map showTag ts
     in "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags="
        ++ tags ++ "&pid=0"
+
+instance BCount GelbooruImageParser XMLResponse where
+  parseCount = read . head . runLA (xreadDoc >>> hasName "posts"
+                                    >>> getAttrValue "count") . getResponse
+
 
 parseRating "e" = Explicit
 parseRating "s" = Safe
@@ -124,6 +131,5 @@ parseImage = hasName "post" >>> proc x → do
       , preview_height = read preview_height
       }
 
-
-pImages :: XMLResponse → [GelbooruImage]
-pImages = parseImages
+pCount :: XMLResponse -> Integer
+pCount = parseCount
