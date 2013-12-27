@@ -25,18 +25,18 @@ instance CoerceResponse JSON JSONResponse where
   toResponse _ = JSONResponse
   fromResponse _ = JSON
 
-class (Site s, Response r) ⇒ PostParser s r where
+class (Site s, DataFormat r) ⇒ PostParser s r where
   type ImageTy s r
-  parseResponse ∷ s → r → [ImageTy s r]
+  parseResponse ∷ CoerceResponse r r' ⇒ s → r' → [ImageTy s r]
 
-class (Site s, Response r) ⇒ Counted s r where
-  parseCount ∷ s → r → Integer
+class (Site s, DataFormat r) ⇒ Counted s r where
+  parseCount ∷ CoerceResponse r r' ⇒ s → r' → Integer
 
 class (Site s, DataFormat r) ⇒ Postable s r where
   postUrl ∷ Tag t ⇒ s → [t] → String
 
 class Site s where
-  hardLimit ∷ s → Maybe Limit
+  hardLimit ∷ s → Limit
 
 data Rating = Safe | Questionable | Explicit deriving (Show, Eq)
 
