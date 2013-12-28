@@ -84,9 +84,12 @@ class (Site s, DataFormat r) ⇒ PostParser s r where
   -- do fc \<- 'XMLResponse' <$> 'readFile' \"gelbooruResponse.xml\"
   --    -- the type of images is actually inferred for us
   --    let images ∷ ['HBooru.Parsers.Gelbooru.GelbooruPost']
-  --        images = parseResponse 'HBooru.Parsers.Gelbooru.Gelbooru' 'XML' fc
+  --        images = parseResponse 'HBooru.Parsers.Gelbooru.Gelbooru' fc
   --    return images
   -- @
+  --
+  -- The cool thing is that we can't feed anything but 'XMLResponse' to an
+  -- XML parser.
   parseResponse ∷ CoerceResponse r r' ⇒ s → r' → [ImageTy s r]
 
 -- | Describes whether a response from a 'Site' in given 'DataFormat'
