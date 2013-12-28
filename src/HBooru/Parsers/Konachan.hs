@@ -23,7 +23,7 @@ import           HBooru.Types
 import           Language.Haskell.TH (mkName)
 import           Text.XML.HXT.Core hiding (mkName)
 
--- | Data type for Konachan posts generated using 'G.makePost'.
+-- | Data type for Konachan posts generated using 'makePost'.
 $(makePost (mkName "KonachanPost"))
 
 -- | We use this type and its 'Site' instance to distinguish
@@ -40,7 +40,7 @@ instance Site Konachan where
 
 instance PostParser Konachan XML where
   type ImageTy Konachan XML = KonachanPost
-  parseResponse _ = map (`G.fromGeneric` KonachanPost)
+  parseResponse _ = map (`betweenPosts` KonachanPost)
                     . runLA (xreadDoc /> G.parsePost) . getResponse
 
 instance Counted Konachan XML where

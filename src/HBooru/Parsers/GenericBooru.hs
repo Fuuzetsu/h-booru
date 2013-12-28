@@ -27,36 +27,6 @@ import Language.Haskell.TH (mkName)
 -- based on the Gelbooru engine.
 $(makePost (mkName "GenericPost"))
 
--- Feels like LISP man
--- | Effectively casts into a different data type that takes the same arguments
--- as 'GenericPost'. This is a (hopefully temporary) hack used to have the
--- ability to parse to a generic post but get a different data type out later,
--- in the specific parsers.
-fromGeneric g n = n
-                  (height g)
-                  (score g)
-                  (file_url g)
-                  (parent_id g)
-                  (sample_url g)
-                  (sample_width g)
-                  (sample_height g)
-                  (preview_url g)
-                  (rating g)
-                  (tags g)
-                  (id g)
-                  (width g)
-                  (change g)
-                  (md5 g)
-                  (creator_id g)
-                  (has_children g)
-                  (created_at g)
-                  (status g)
-                  (source g)
-                  (has_notes g)
-                  (has_comments g)
-                  (preview_width g)
-                  (preview_height g)
-
 -- | Fairly naïve parser for all attributes in sites running vanilla
 -- Gelbooru engine. While it catches all attributes in a typical XML post
 -- result, we trust that they are consistent and use 'read' to deserialise some
@@ -87,29 +57,29 @@ parsePost = hasName "post" >>> proc x → do
   preview_width <- getAttrValue "preview_width" -< x
   preview_height <- getAttrValue "preview_height" -< x
   returnA -< GenericPost
-      { height = read height
-      , score = read score
-      , file_url = file_url
-      , parent_id = readMaybe parent_id
-      , sample_url = sample_url
-      , sample_width = read sample_width
-      , sample_height = read sample_height
-      , preview_url = preview_url
-      , rating = parseRating rating
-      , tags = parseTags tags
-      , HBooru.Parsers.GenericBooru.id = read id
-      , width = read width
-      , change = change
-      , md5 = md5
-      , creator_id = read creator_id
-      , has_children = parseBool has_children
-      , created_at = created_at
-      , status = status
-      , source = source
-      , has_notes = parseBool has_notes
-      , has_comments = parseBool has_comments
-      , preview_width = read preview_width
-      , preview_height = read preview_height
+      { heightT = read height
+      , scoreT = read score
+      , file_urlT = file_url
+      , parent_idT = readMaybe parent_id
+      , sample_urlT = sample_url
+      , sample_widthT = read sample_width
+      , sample_heightT = read sample_height
+      , preview_urlT = preview_url
+      , ratingT = parseRating rating
+      , tagsT = parseTags tags
+      , idT = read id
+      , widthT = read width
+      , changeT = change
+      , md5T = md5
+      , creator_idT = read creator_id
+      , has_childrenT = parseBool has_children
+      , created_atT = created_at
+      , statusT = status
+      , sourceT = source
+      , has_notesT = parseBool has_notes
+      , has_commentsT = parseBool has_comments
+      , preview_widthT = read preview_width
+      , preview_heightT = read preview_height
       }
 
 -- | Parses a string returned from a Gelbooru-like site into

@@ -23,7 +23,7 @@ import           HBooru.Types
 import           Language.Haskell.TH (mkName)
 import           Text.XML.HXT.Core hiding (mkName)
 
--- | Data type for Yandere posts generated using 'G.makePost'.
+-- | Data type for Yandere posts generated using 'makePost'.
 $(makePost (mkName "YanderePost"))
 
 -- | We use this type and its 'Site' instance to distinguish
@@ -40,7 +40,7 @@ instance Site Yandere where
 
 instance PostParser Yandere XML where
   type ImageTy Yandere XML = YanderePost
-  parseResponse _ = map (`G.fromGeneric` YanderePost)
+  parseResponse _ = map (`betweenPosts` YanderePost)
                     . runLA (xreadDoc /> G.parsePost) . getResponse
 
 instance Counted Yandere XML where

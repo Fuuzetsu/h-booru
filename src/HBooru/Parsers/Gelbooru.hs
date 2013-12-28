@@ -22,7 +22,7 @@ import           HBooru.Types
 import           Language.Haskell.TH (mkName)
 import           Text.XML.HXT.Core hiding (mkName)
 
--- | Data type for Gelbooru posts generated using 'G.makePost'.
+-- | Data type for Gelbooru posts generated using 'makePost'.
 $(makePost (mkName "GelbooruPost"))
 
 -- | We use this type and its 'Site' instance to distinguish
@@ -40,7 +40,7 @@ instance Site Gelbooru where
 
 instance PostParser Gelbooru XML where
   type ImageTy Gelbooru XML = GelbooruPost
-  parseResponse _ = map (`G.fromGeneric` GelbooruPost)
+  parseResponse _ = map (`betweenPosts` GelbooruPost)
                     . runLA (xreadDoc /> G.parsePost) . getResponse
 
 instance Counted Gelbooru XML where

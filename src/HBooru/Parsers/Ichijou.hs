@@ -22,7 +22,7 @@ import           HBooru.Types
 import           Language.Haskell.TH.Syntax (mkName)
 import           Text.XML.HXT.Core hiding (mkName)
 
--- | Data type for safebooru posts generated using 'G.makePost'.
+-- | Data type for safebooru posts generated using 'makePost'.
 $(makePost (mkName "IchijouPost"))
 
 -- | We use this type and its 'Site' instance to distinguish
@@ -39,7 +39,7 @@ instance Site Ichijou where
 
 instance PostParser Ichijou XML where
   type ImageTy Ichijou XML = IchijouPost
-  parseResponse _ = map (`G.fromGeneric` IchijouPost)
+  parseResponse _ = map (`betweenPosts` IchijouPost)
                     . runLA (xreadDoc /> G.parsePost) . getResponse
 
 instance Counted Ichijou XML where

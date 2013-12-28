@@ -15,6 +15,7 @@
 -- Module definining types used by the library.
 module HBooru.Types where
 
+import Prelude hiding (id)
 
 -- | Tags used for searching in sites. No special escaping is done.
 -- Note that many sites would treat a tag like \"striped panties\"
@@ -151,3 +152,47 @@ instance Response XMLResponse where
 
 instance Response JSONResponse where
   getResponse (JSONResponse x) = x
+
+-- | Class representing a best-case scenario post. We use this
+-- to convert between different posts for each site while providing
+-- uniform access. The methods are just the attributes of posts seen
+-- on Gelbooru-like sites.
+class Post a where
+  height ∷ a → Integer
+  score ∷ a → Integer
+  file_url ∷ a → String
+  parent_id ∷ a → Maybe Integer
+  sample_url ∷ a → String
+  sample_width ∷ a → Integer
+  sample_height ∷ a → Integer
+  preview_url ∷ a → String
+  rating ∷ a → Rating
+  tags ∷ a → [String]
+  id ∷ a → Integer
+  width ∷ a → Integer
+  change ∷ a → String
+  md5 ∷ a → String
+  creator_id ∷ a → Integer
+  has_children ∷ a → Maybe Bool
+  created_at ∷ a → String
+  status ∷ a → String
+  source ∷ a → String
+  has_notes ∷ a → Maybe Bool
+  has_comments ∷ a → Maybe Bool
+  preview_width ∷ a → Integer
+  preview_height ∷ a → Integer
+  betweenPosts ∷ Post b ⇒ a → PostConstructor b → b
+  betweenPosts g c =
+    c (height g) (score g) (file_url g) (parent_id g) (sample_url g)
+      (sample_width g) (sample_height g) (preview_url g) (rating g)
+      (tags g) (id g) (width g) (change g) (md5 g) (creator_id g)
+      (has_children g) (created_at g) (status g) (source g) (has_notes g)
+      (has_comments g) (preview_width g) (preview_height g)
+
+
+-- | A cludge for use with 'betweenPosts'
+type PostConstructor b =
+  Integer -> Integer -> String -> Maybe Integer -> String -> Integer -> Integer
+  -> String -> Rating -> [String] -> Integer -> Integer -> String -> String
+  -> Integer -> Maybe Bool -> String -> String -> String -> Maybe Bool
+  -> Maybe Bool -> Integer -> Integer -> b
