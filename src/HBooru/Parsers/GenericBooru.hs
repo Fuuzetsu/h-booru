@@ -120,7 +120,7 @@ makePost n =
     , varStrictType (mkName "preview_height") $ strictType notStrict
                                                  [t| Integer |]
     ]
-  ] []
+  ] [mkName "Show", mkName "Eq"]
 
 -- | Fairly naïve parser for all attributes in sites running vanilla
 -- Gelbooru engine. While it catches all attributes in a typical XML post
