@@ -17,8 +17,8 @@ module HBooru.Types where
 
 
 -- | Tags used for searching in sites. No special escaping is done.
--- Note that many sites would treat a tag like "striped panties" as two separate
--- tags and you wouldn't get the results you were after.
+-- Note that many sites would treat a tag like \"striped panties\"
+-- as two separate tags and you wouldn't get the results you were after.
 type Tag = String
 
 -- | Data format used by various 'Site's. See instances for currently used
