@@ -24,6 +24,7 @@ library
   exposed-modules:
     HBooru.Types
     HBooru.Parsers.Gelbooru
+    HBooru.Parsers.Konachan
     HBooru.Parsers.Safebooru
     HBooru.Parsers.Yandere
     HBooru.Parsers.GenericBooru
