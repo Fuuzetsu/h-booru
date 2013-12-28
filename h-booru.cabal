@@ -25,6 +25,7 @@ library
     HBooru.Types
     HBooru.Parsers.Gelbooru
     HBooru.Parsers.Safebooru
+    HBooru.Parsers.Yandere
     HBooru.Parsers.GenericBooru
     HBooru.Parsers.GenericBooru.TH
   -- other-modules:
