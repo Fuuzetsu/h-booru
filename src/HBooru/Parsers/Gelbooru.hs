@@ -21,7 +21,7 @@ import Text.XML.HXT.Core hiding (mkName)
 import qualified HBooru.Parsers.GenericBooru as G
 import Language.Haskell.TH (mkName)
 
--- | Data type generated using 'G.makePost' for Gelbooru.
+-- | Data type for Gelbooru posts generated using 'G.makePost'.
 $(G.makePost (mkName "GelbooruPost"))
 
 -- | We use this type and its 'Site' instance to distinguish

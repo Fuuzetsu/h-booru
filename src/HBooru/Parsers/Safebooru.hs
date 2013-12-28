@@ -21,7 +21,7 @@ import qualified HBooru.Parsers.GenericBooru as G
 import Text.XML.HXT.Core hiding (mkName)
 import Language.Haskell.TH.Syntax (mkName)
 
--- | Data type generated using 'G.makePost' for safebooru.
+-- | Data type for safebooru posts generated using 'G.makePost'.
 $(G.makePost (mkName "SafebooruPost"))
 
 -- | We use this type and its 'Site' instance to distinguish
