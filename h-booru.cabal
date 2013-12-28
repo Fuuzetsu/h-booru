@@ -28,4 +28,4 @@ library
     HBooru.Parsers.GenericBooru
     HBooru.Parsers.GenericBooru.TH
   -- other-modules:
-  build-depends:       base >=4.6 && <5, HTTP, hxt >= 9.3.1.2, template-haskell
+  build-depends:       base >=4.6 && <5, hxt >= 9.3.1.2, template-haskell
