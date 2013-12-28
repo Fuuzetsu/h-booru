@@ -15,14 +15,15 @@
 -- Module for parsing content from <http://safebooru.org/ safebooru>.
 module HBooru.Parsers.Safebooru where
 
-import Data.List
-import HBooru.Types
+import           Data.List
 import qualified HBooru.Parsers.GenericBooru as G
-import Text.XML.HXT.Core hiding (mkName)
-import Language.Haskell.TH.Syntax (mkName)
+import           HBooru.Parsers.GenericBooru.TH (makePost)
+import           HBooru.Types
+import           Language.Haskell.TH.Syntax (mkName)
+import           Text.XML.HXT.Core hiding (mkName)
 
 -- | Data type for safebooru posts generated using 'G.makePost'.
-$(G.makePost (mkName "SafebooruPost"))
+$(makePost (mkName "SafebooruPost"))
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.

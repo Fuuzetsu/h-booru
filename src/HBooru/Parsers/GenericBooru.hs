@@ -18,36 +18,14 @@ module HBooru.Parsers.GenericBooru where
 import Prelude hiding (id)
 import Data.String
 import HBooru.Types
+import HBooru.Parsers.GenericBooru.TH
 import Text.Read (readMaybe)
 import Text.XML.HXT.Core hiding (mkName)
-import Language.Haskell.TH
+import Language.Haskell.TH (mkName)
 
 -- | A post we might expect from many of the sites as a lot of them seem to be
 -- based on the Gelbooru engine.
-data GenericPost = GenericPost { height ∷ Integer
-                               , score ∷ Integer
-                               , file_url ∷ String
-                               , parent_id ∷ Maybe Integer
-                               , sample_url ∷ String
-                               , sample_width ∷ Integer
-                               , sample_height ∷ Integer
-                               , preview_url ∷ String
-                               , rating ∷ Rating
-                               , tags ∷ [String]
-                               , id ∷ Integer
-                               , width ∷ Integer
-                               , change ∷ String
-                               , md5 ∷ String
-                               , creator_id ∷ Integer
-                               , has_children ∷ Bool
-                               , created_at ∷ String
-                               , status ∷ String
-                               , source ∷ String
-                               , has_notes ∷ Bool
-                               , has_comments ∷ Bool
-                               , preview_width ∷ Integer
-                               , preview_height ∷ Integer
-                               } deriving Show
+$(makePost (mkName "GenericPost"))
 
 -- Feels like LISP man
 -- | Effectively casts into a different data type that takes the same arguments
@@ -78,49 +56,6 @@ fromGeneric g n = n
                   (has_comments g)
                   (preview_width g)
                   (preview_height g)
-
-
--- | Template Haskell function which is able to generate 'GenericPost'-alike
--- type declarations for cases where we want to use this format but need a
--- different data type. It can be used by using @TemplateHaskell@ extension and
--- calling @$(makePost ('mkName' \"YourTypeName\"))@ at the top level. Hopefully
--- a temporary measure until the author thinks of a better way to provide
--- generic Gelbooru-like post parsing while casting out to different data types
--- that's OK to write.
-makePost :: Name -> Q [Dec]
-makePost n =
-  fmap (:[]) $ dataD (cxt []) n []
-  [ recC n
-    [ varStrictType (mkName "height") $ strictType notStrict [t| Integer |]
-    , varStrictType (mkName "score") $ strictType notStrict [t| Integer |]
-    , varStrictType (mkName "file_url") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "parent_id") $ strictType notStrict
-                                             [t| Maybe Integer |]
-    , varStrictType (mkName "sample_url") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "sample_width") $ strictType notStrict
-                                                [t| Integer |]
-    , varStrictType (mkName "sample_height") $ strictType notStrict
-                                                 [t| Integer |]
-    , varStrictType (mkName "preview_url") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "rating") $ strictType notStrict [t| Rating |]
-    , varStrictType (mkName "tags") $ strictType notStrict [t| [String] |]
-    , varStrictType (mkName "id") $ strictType notStrict [t| Integer |]
-    , varStrictType (mkName "width") $ strictType notStrict [t| Integer |]
-    , varStrictType (mkName "change") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "md5") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "creator_id") $ strictType notStrict [t| Integer |]
-    , varStrictType (mkName "has_children") $ strictType notStrict [t| Bool |]
-    , varStrictType (mkName "created_at") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "status") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "source") $ strictType notStrict [t| String |]
-    , varStrictType (mkName "has_notes") $ strictType notStrict [t| Bool |]
-    , varStrictType (mkName "has_comments") $ strictType notStrict [t| Bool |]
-    , varStrictType (mkName "preview_width") $ strictType notStrict
-                                                 [t| Integer |]
-    , varStrictType (mkName "preview_height") $ strictType notStrict
-                                                 [t| Integer |]
-    ]
-  ] [mkName "Show", mkName "Eq"]
 
 -- | Fairly naïve parser for all attributes in sites running vanilla
 -- Gelbooru engine. While it catches all attributes in a typical XML post
@@ -191,8 +126,9 @@ parseRating "q" = Questionable
 parseTags :: String -> [Tag]
 parseTags = words
 
--- | Reads a lowercase 'Bool' string representation into its Haskell type. Note
--- that this is a partial function.
-parseBool :: String -> Bool
-parseBool "false" = False
-parseBool "true" = True
+-- | Reads a lowercase 'Bool' string representation into its Haskell type. If we
+-- can't parse the boolean, return 'Nothing'.
+parseBool :: String -> Maybe Bool
+parseBool "false" = Just False
+parseBool "true" = Just True
+parseBool _ = Nothing

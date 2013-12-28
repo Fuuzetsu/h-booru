@@ -15,14 +15,15 @@
 -- Module for parsing content from <http://gelbooru.com/ Gelbooru>.
 module HBooru.Parsers.Gelbooru where
 
-import Data.List
-import HBooru.Types
-import Text.XML.HXT.Core hiding (mkName)
+import           Data.List
 import qualified HBooru.Parsers.GenericBooru as G
-import Language.Haskell.TH (mkName)
+import           HBooru.Parsers.GenericBooru.TH (makePost)
+import           HBooru.Types
+import           Language.Haskell.TH (mkName)
+import           Text.XML.HXT.Core hiding (mkName)
 
 -- | Data type for Gelbooru posts generated using 'G.makePost'.
-$(G.makePost (mkName "GelbooruPost"))
+$(makePost (mkName "GelbooruPost"))
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
