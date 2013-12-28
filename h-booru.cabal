@@ -22,9 +22,9 @@ library
   hs-source-dirs:      src
   default-language:    Haskell2010
   exposed-modules:
-    HBooru
     HBooru.Types
     HBooru.Parsers.Gelbooru
     HBooru.Parsers.Safebooru
+    HBooru.Parsers.GenericBooru
   -- other-modules:
-  build-depends:       base >=4.6 && <4.7, HTTP, hxt >= 9.3.1.2
+  build-depends:       base >=4.6 && <5, HTTP, hxt >= 9.3.1.2, template-haskell
