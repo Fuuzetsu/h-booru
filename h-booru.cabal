@@ -23,6 +23,7 @@ library
   default-language:    Haskell2010
   exposed-modules:
     HBooru.Types
+    HBooru.Network
     HBooru.Parsers.Gelbooru
     HBooru.Parsers.Ichijou
     HBooru.Parsers.Konachan
@@ -32,3 +33,4 @@ library
     HBooru.Parsers.GenericBooru.TH
   -- other-modules:
   build-depends:       base >=4.6 && <5, hxt >= 9.3.1.2, template-haskell
+                       , http-conduit
