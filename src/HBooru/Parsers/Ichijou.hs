@@ -32,7 +32,7 @@ data Ichijou = Ichijou
 instance Postable Ichijou XML where
   postUrl _ _ ts =
     let tags = intercalate "+" ts
-    in "http://ichijou.org/index.xml?tags=" ++ tags
+    in "http://ichijou.org/post/index.xml?tags=" ++ tags
   hardLimit _ = Limit 100
 
 instance Site Ichijou where
