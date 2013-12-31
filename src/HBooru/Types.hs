@@ -101,7 +101,7 @@ class (Site s, DataFormat r) ⇒ Counted s r where
 
 -- | If we can make an API request to 'Site' in a specific 'DataFormat', we can
 -- use instances of this class to pass in
-class (Site s, DataFormat r) ⇒ Postable s r where
+class PostParser s r ⇒ Postable s r where
   -- | Given a 'Site', a 'DataFormat' and a list of 'Tag's, an instance of this
   -- class should be able to return a 'String' at which we can find data in
   -- 'DataFormat' format that honours our tags. This is effectively a URL
