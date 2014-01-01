@@ -22,9 +22,22 @@ import Data.ByteString.UTF8
 -- | Given a 'Site', 'DataFormat' and a list of 'Tag's, naively fetch the first
 -- page or so and parse it to the appropriate image type. Both the site and the
 -- format need to together form an instance of 'Postable' and the data format
--- has to exist in an instance of 'CoerceResponse'.
+-- has to exist in an instance of 'CoerceResponse'. Uses 'fetchPostPage' to
+-- fetch the data.
 fetchTaggedPosts
-  :: (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → IO [ImageTy s d]
+  ∷ (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → IO [ImageTy s d]
 fetchTaggedPosts s d ts = do
-  parseResponse s . toResponse d . toString . toStrict
-  <$> simpleHttp (postUrl s d ts)
+  parseResponse s <$> fetchPostPage s d ts
+
+-- | Given an instance of 'Postable', 'CoerceResponse', and a list of 'Tag's,
+-- fetch the post page.
+fetchPostPage ∷ (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → IO r
+fetchPostPage s d ts = toResponse d . toString . toStrict
+                       <$> simpleHttp (postUrl s d ts)
+
+-- | Uses 'fetchPostPage' to parse the number of posts available based on
+-- provided 'Tag's.
+fetchPostCount
+  ∷ (Postable s r, Counted s r, CoerceResponse r a) ⇒ s → r → [Tag] → IO Integer
+fetchPostCount s d ts = do
+  parseCount s <$> fetchPostPage s d ts
