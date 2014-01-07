@@ -10,7 +10,7 @@
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
 -- Stability   :  experimental
 --
--- | Many booru sites use the same engine (Gelbooru engine) so instead of having
+-- Many booru sites use the same engine (Gelbooru engine) so instead of having
 -- identical parsers across many modules, we simply alias our 'GenericPost' to
 -- whatever we need.
 module HBooru.Parsers.GenericBooru where

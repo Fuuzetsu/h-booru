@@ -7,7 +7,7 @@
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
 -- Stability   :  experimental
 --
--- | Helper module for "HBooru.Parsers.GenericBooru" due to Template Haskell
+-- Helper module for "HBooru.Parsers.GenericBooru" due to Template Haskell
 -- limitation of being unable to splice inside of the same module of
 -- definitions.
 module HBooru.Parsers.GenericBooru.TH where
