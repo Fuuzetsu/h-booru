@@ -12,7 +12,7 @@
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
 -- Stability   :  experimental
 --
--- Module for parsing content from <http://safebooru.org/ safebooru>.
+-- Module for parsing content from <http://ichijou.org/ Ichijou/vectorbooru>.
 module HBooru.Parsers.Ichijou where
 
 import           Data.List
