@@ -69,7 +69,7 @@ makePost' n =
 -- | Template Haskell function which creates 'Post' instances for things made
 -- with 'makePost'.
 makePostInstance :: Name -> Q [Dec]
-makePostInstance n = do
+makePostInstance n =
   return [InstanceD
           []
           (ConT (mkName "Post") `AppT` ConT n)
@@ -84,7 +84,7 @@ makePostInstance n = do
          ]
     where
       onG n = FunD (mkName n)
-              [ Clause [(VarP (mkName "g"))]
+              [ Clause [VarP (mkName "g")]
                 (NormalB (AppE (VarE (mkName $ n ++ "T"))
                           (VarE (mkName "g")))) []
               ]
