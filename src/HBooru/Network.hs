@@ -26,8 +26,7 @@ import Data.ByteString.UTF8
 -- fetch the data.
 fetchTaggedPosts
   ∷ (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → IO [ImageTy s d]
-fetchTaggedPosts s d ts = do
-  parseResponse s <$> fetchPostPage s d ts
+fetchTaggedPosts s d ts = parseResponse s <$> fetchPostPage s d ts
 
 -- | Given an instance of 'Postable', 'CoerceResponse', and a list of 'Tag's,
 -- fetch the post page.
@@ -39,5 +38,4 @@ fetchPostPage s d ts = toResponse d . toString . toStrict
 -- provided 'Tag's.
 fetchPostCount
   ∷ (Postable s r, Counted s r, CoerceResponse r a) ⇒ s → r → [Tag] → IO Integer
-fetchPostCount s d ts = do
-  parseCount s <$> fetchPostPage s d ts
+fetchPostCount s d ts = parseCount s <$> fetchPostPage s d ts
