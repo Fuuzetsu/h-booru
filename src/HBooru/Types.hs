@@ -5,6 +5,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 -- |
 -- Module      :  HBooru.Types
@@ -22,6 +23,7 @@ import Control.Applicative
 import Data.Vinyl
 import Data.Vinyl.Unicode
 import Data.Vinyl.Validation
+import Text.XML.HXT.Core hiding (mkName, (<+>))
 
 -- | Tags used for searching in sites. No special escaping is done.
 -- Note that many sites would treat a tag like \"striped panties\"
@@ -344,3 +346,6 @@ type PostConstructor b =
   -> String -> Rating -> [String] -> Integer -> Integer -> String -> String
   -> Integer -> Maybe Bool -> String -> String -> String -> Maybe Bool
   -> Maybe Bool -> Integer -> Integer -> b
+
+instance Functor (LA XmlTree) where
+  fmap f (LA g) = LA $ fmap fmap fmap f g

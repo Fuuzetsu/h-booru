@@ -36,9 +36,6 @@ import           Language.Haskell.TH (mkName)
 import           Text.XML.HXT.Core hiding (mkName, (<+>))
 import           Text.Read (readMaybe)
 
--- | Data type for Konachan posts generated using 'makePost'.
-$(makePost (mkName "KonachanPost"))
-
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
 data Konachan = Konachan
@@ -80,7 +77,7 @@ type KonachanPost' = PlainRec
    , "width" ::: Integer
    ]
 
-
+-- | Parser arrow used for Konachan.
 parsePost ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒ cat XmlTree KonachanPost'
 parsePost = hasName "post"
   >>> actual_preview_heightA <:+> actual_preview_widthA <:+> authorA
@@ -103,9 +100,8 @@ instance Postable Konachan XML where
 instance Site Konachan where
 
 instance PostParser Konachan XML where
-  type ImageTy Konachan XML = KonachanPost
-  parseResponse _ = map (`betweenPosts` KonachanPost)
-                    . runLA (xreadDoc /> G.parsePost) . getResponse
+  type ImageTy Konachan XML = KonachanPost'
+  parseResponse _ = runLA (xreadDoc /> parsePost) . getResponse
 
 instance Counted Konachan XML where
   parseCount _ = read . head . runLA (xreadDoc >>> hasName "posts"
