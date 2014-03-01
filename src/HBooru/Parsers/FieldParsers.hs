@@ -52,7 +52,7 @@ parent_idA = (parent_id'' =:) . readMaybe <$> getAttrValue "parent_id"
 
 sample_urlA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
               cat XmlTree (PlainRec '["sample_url" ::: String])
-sample_urlA = (sample_url'' =:) . read <$> getAttrValue "sample_url"
+sample_urlA = (sample_url'' =:) <$> getAttrValue "sample_url"
 
 sample_widthA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
                 cat XmlTree (PlainRec '["sample_width" ::: Integer])
