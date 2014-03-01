@@ -3,6 +3,8 @@
 {-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 -- |
 -- Module      :  HBooru.Types
@@ -16,6 +18,10 @@
 module HBooru.Types where
 
 import Prelude hiding (id)
+import Control.Applicative
+import Data.Vinyl
+import Data.Vinyl.Unicode
+import Data.Vinyl.Validation
 
 -- | Tags used for searching in sites. No special escaping is done.
 -- Note that many sites would treat a tag like \"striped panties\"
@@ -189,6 +195,148 @@ class Post a where
       (has_children g) (created_at g) (status g) (source g) (has_notes g)
       (has_comments g) (preview_width g) (preview_height g)
 
+type GenericFields =
+  [ "height" ::: Integer
+  , "score" ::: Integer
+  , "file_url" ::: String
+  , "parent_id" ::: Maybe Integer
+  , "sample_url" ::: String
+  , "sample_width" ::: Integer
+  , "sample_height" ::: Integer
+  , "preview_url" ::: String
+  , "rating" ::: Rating
+  , "tags" ::: [String]
+  , "id" ::: Integer
+  , "width" ::: Integer
+  , "change" ::: String
+  , "md5" ::: String
+  , "creator_id" ::: Integer
+  , "has_children" ::: Maybe Bool
+  , "created_at" ::: Integer
+  , "status" ::: String
+  , "source" ::: String
+  , "has_notes" ::: Maybe Bool
+  , "has_comments" ::: Maybe Bool
+  , "preview_width" ::: Integer
+  , "preview_height" ::: Integer
+  ]
+
+
+height'' ∷ "height" ::: Integer
+height'' = Field
+
+score'' ∷ "score" ::: Integer
+score'' = Field
+
+file_url'' ∷ "file_url" ::: String
+file_url'' = Field
+
+parent_id'' ∷ "parent_id" ::: Maybe Integer
+parent_id'' = Field
+
+sample_url'' ∷ "sample_url" ::: String
+sample_url'' = Field
+
+sample_width'' ∷ "sample_width" ::: Integer
+sample_width'' = Field
+
+sample_height'' ∷ "sample_height" ::: Integer
+sample_height'' = Field
+
+preview_url'' ∷ "preview_url" ::: String
+preview_url'' = Field
+
+rating'' ∷ "rating" ::: Rating
+rating'' = Field
+
+tags'' ∷ "tags" ::: [String]
+tags'' = Field
+
+id'' ∷ "id" ::: Integer
+id'' = Field
+
+width'' ∷ "width" ::: Integer
+width'' = Field
+
+change'' ∷ "change" ::: String
+change'' = Field
+
+md5'' ∷ "md5" ::: String
+md5'' = Field
+
+creator_id'' ∷ "creator_id" ::: Integer
+creator_id'' = Field
+
+has_children'' ∷ "has_children" ::: Bool
+has_children'' = Field
+
+created_at'' ∷ "created_at" ::: String
+created_at'' = Field
+
+status'' ∷ "status" ::: String
+status'' = Field
+
+source'' ∷ "source" ::: String
+source'' = Field
+
+has_notes'' ∷ "has_notes" ::: Maybe Bool
+has_notes'' = Field
+
+has_comments'' ∷ "has_comments" ::: Maybe Bool
+has_comments'' = Field
+
+preview_width'' ∷ "preview_width" ::: Integer
+preview_width'' = Field
+
+preview_height'' ∷ "preview_height" ::: Integer
+preview_height'' = Field
+
+author'' ∷ "author" ::: String
+author'' = Field
+
+frames'' ∷ "frames" ::: String
+frames'' = Field
+
+frames_pending'' ∷ "frames_pending" ::: String
+frames_pending'' = Field
+
+frames_pending_string'' ∷ "frames_pending_string" ::: String
+frames_pending_string'' = Field
+
+frames_string'' ∷ "frames_string" ::: String
+frames_string'' = Field
+
+is_held'' ∷ "is_held" ::: Bool
+is_held'' = Field
+
+is_shown_in_index'' ∷ "is_shown_in_index" ::: Bool
+is_shown_in_index'' = Field
+
+jpeg_file_size'' ∷ "jpeg_file_size" ::: String
+jpeg_file_size'' = Field
+
+jpeg_height'' ∷ "jpeg_height" ::: Integer
+jpeg_height'' = Field
+
+jpeg_url'' ∷ "jpeg_url" ::: String
+jpeg_url'' = Field
+
+jpeg_width'' ∷ "jpeg_width" ::: Integer
+jpeg_width'' = Field
+
+sample_file_size'' ∷ "sample_file_size" ::: String
+sample_file_size'' = Field
+
+actual_preview_height'' ∷ "actual_preview_height" ::: Integer
+actual_preview_height'' = Field
+
+actual_preview_width'' ∷ "actual_preview_width" ::: Integer
+actual_preview_width'' = Field
+
+file_size'' ∷ "file_size" ::: String
+file_size'' = Field
+
+type GenericPost' = PlainRec GenericFields
 
 -- | A cludge for use with 'betweenPosts'
 type PostConstructor b =
