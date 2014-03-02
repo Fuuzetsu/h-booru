@@ -21,18 +21,13 @@
 -- homogenous list.
 module HBooru.Parsers.FieldParsers where
 
-import Prelude hiding (id)
 import Control.Applicative
-import Data.String
+import Data.Maybe
+import Data.Vinyl
 import HBooru.Types
-import HBooru.Parsers.GenericBooru.TH
+import Prelude hiding (id)
 import Text.Read (readMaybe)
 import Text.XML.HXT.Core hiding (mkName, (<+>))
-import Language.Haskell.TH (mkName)
-import           Data.Vinyl
-import           Data.Vinyl.Unicode
-import           Data.Vinyl.Validation
-import Data.Maybe
 
 heightA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
           cat XmlTree (PlainRec '["height" ::: Integer])
@@ -205,6 +200,7 @@ parseRating :: String -> Rating
 parseRating "e" = Explicit
 parseRating "s" = HBooru.Types.Safe
 parseRating "q" = Questionable
+parseRating _ = error "Failed to parse rating"
 
 -- | Splits returned tag string into separate 'Tag's. For Gelbooru-like
 -- sites, this is just the question of splitting on whitespace.

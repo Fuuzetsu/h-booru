@@ -15,13 +15,13 @@
 -- whatever we need.
 module HBooru.Parsers.GenericBooru where
 
-import Prelude hiding (id)
-import Data.String
-import HBooru.Types
+import HBooru.Parsers.FieldParsers (parseBool, parseTags, parseRating)
 import HBooru.Parsers.GenericBooru.TH
+import HBooru.Types (Post(..))
+import Language.Haskell.TH (mkName)
+import Prelude hiding (id)
 import Text.Read (readMaybe)
 import Text.XML.HXT.Core hiding (mkName)
-import Language.Haskell.TH (mkName)
 
 -- | A post we might expect from many of the sites as a lot of them seem to be
 -- based on the Gelbooru engine.
@@ -33,29 +33,29 @@ $(makePost (mkName "GenericPost"))
 -- values. For sites with non-default replies, custom parsers have to be written.
 parsePost ∷ ArrowXml cat ⇒ cat XmlTree GenericPost
 parsePost = hasName "post" >>> proc x → do
-  height <- getAttrValue "height" -< x
-  score <- getAttrValue "score" -< x
-  file_url <- getAttrValue "file_url" -< x
-  parent_id <- getAttrValue "parent_id" -< x
-  sample_url <- getAttrValue "sample_url" -< x
-  sample_width <- getAttrValue "sample_width" -< x
-  sample_height <- getAttrValue "sample_height" -< x
-  preview_url <- getAttrValue "preview_url" -< x
-  rating <- getAttrValue "rating" -< x
-  tags <- getAttrValue "tags" -< x
-  id <- getAttrValue "id" -< x
-  width <- getAttrValue "width" -< x
-  change <- getAttrValue "change" -< x
-  md5 <- getAttrValue "md5" -< x
-  creator_id <- getAttrValue "creator_id" -< x
-  has_children <- getAttrValue "has_children" -< x
-  created_at <- getAttrValue "created_at" -< x
-  status <- getAttrValue "status" -< x
-  source <- getAttrValue "source" -< x
-  has_notes <- getAttrValue "has_notes" -< x
-  has_comments <- getAttrValue "has_comments" -< x
-  preview_width <- getAttrValue "preview_width" -< x
-  preview_height <- getAttrValue "preview_height" -< x
+  height ← getAttrValue "height" -< x
+  score ← getAttrValue "score" -< x
+  file_url ← getAttrValue "file_url" -< x
+  parent_id ← getAttrValue "parent_id" -< x
+  sample_url ← getAttrValue "sample_url" -< x
+  sample_width ← getAttrValue "sample_width" -< x
+  sample_height ← getAttrValue "sample_height" -< x
+  preview_url ← getAttrValue "preview_url" -< x
+  rating ← getAttrValue "rating" -< x
+  tags ← getAttrValue "tags" -< x
+  id ← getAttrValue "id" -< x
+  width ← getAttrValue "width" -< x
+  change ← getAttrValue "change" -< x
+  md5 ← getAttrValue "md5" -< x
+  creator_id ← getAttrValue "creator_id" -< x
+  has_children ← getAttrValue "has_children" -< x
+  created_at ← getAttrValue "created_at" -< x
+  status ← getAttrValue "status" -< x
+  source ← getAttrValue "source" -< x
+  has_notes ← getAttrValue "has_notes" -< x
+  has_comments ← getAttrValue "has_comments" -< x
+  preview_width ← getAttrValue "preview_width" -< x
+  preview_height ← getAttrValue "preview_height" -< x
   returnA -< GenericPost
       { heightT = read height
       , scoreT = read score
@@ -81,24 +81,3 @@ parsePost = hasName "post" >>> proc x → do
       , preview_widthT = read preview_width
       , preview_heightT = read preview_height
       }
-
--- | Parses a string returned from a Gelbooru-like site into
--- one of the commonly used 'Rating's. Note that this is a partial function
--- so you should make sure that the site in question only ever returns the
--- values in a format specified in the function
-parseRating :: String -> Rating
-parseRating "e" = Explicit
-parseRating "s" = HBooru.Types.Safe
-parseRating "q" = Questionable
-
--- | Splits returned tag string into separate 'Tag's. For Gelbooru-like
--- sites, this is just the question of splitting on whitespace.
-parseTags :: String -> [Tag]
-parseTags = words
-
--- | Reads a lowercase 'Bool' string representation into its Haskell type. If we
--- can't parse the boolean, return 'Nothing'.
-parseBool :: String -> Maybe Bool
-parseBool "false" = Just False
-parseBool "true" = Just True
-parseBool _ = Nothing

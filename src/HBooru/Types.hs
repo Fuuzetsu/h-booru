@@ -6,6 +6,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
 -- Module      :  HBooru.Types
@@ -18,11 +19,8 @@
 -- Module definining types used by the library.
 module HBooru.Types where
 
-import Prelude hiding (id)
-import Control.Applicative
 import Data.Vinyl
-import Data.Vinyl.Unicode
-import Data.Vinyl.Validation
+import Prelude hiding (id)
 import Text.XML.HXT.Core hiding (mkName, (<+>))
 
 -- | Tags used for searching in sites. No special escaping is done.
@@ -342,10 +340,10 @@ type GenericPost' = PlainRec GenericFields
 
 -- | A cludge for use with 'betweenPosts'
 type PostConstructor b =
-  Integer -> Integer -> String -> Maybe Integer -> String -> Integer -> Integer
-  -> String -> Rating -> [String] -> Integer -> Integer -> String -> String
-  -> Integer -> Maybe Bool -> String -> String -> String -> Maybe Bool
-  -> Maybe Bool -> Integer -> Integer -> b
+  Integer → Integer → String → Maybe Integer → String → Integer → Integer
+  → String → Rating → [String] → Integer → Integer → String → String
+  → Integer → Maybe Bool → String → String → String → Maybe Bool
+  → Maybe Bool → Integer → Integer → b
 
 instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g

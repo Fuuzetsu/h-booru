@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE UnicodeSyntax #-}
 -- |
 -- Module      :  HBooru.Parsers.GenericBooru.TH
 -- Copyright   :  (c) Mateusz Kowalczyk 2013
@@ -15,10 +16,10 @@ module HBooru.Parsers.GenericBooru.TH where
 import Control.Applicative
 import HBooru.Types
 import Language.Haskell.TH
-import Language.Haskell.TH.Syntax
 
 -- | A TH helper which makes an instance along with the data type using
 -- 'makePost'' and 'makePostInstance'.
+makePost ∷ Name → Q [Dec]
 makePost n = liftA2 (++) (makePost' n) (makePostInstance n)
 
 -- | Template Haskell function which is able to generate 'GenericPost'-alike
@@ -28,7 +29,7 @@ makePost n = liftA2 (++) (makePost' n) (makePostInstance n)
 -- a temporary measure until the author thinks of a better way to provide
 -- generic Gelbooru-like post parsing while casting out to different data types
 -- that's OK to write.
-makePost' :: Name -> Q [Dec]
+makePost' ∷ Name → Q [Dec]
 makePost' n =
   fmap (:[]) $ dataD (cxt []) n []
   [ recC n
@@ -68,7 +69,7 @@ makePost' n =
 
 -- | Template Haskell function which creates 'Post' instances for things made
 -- with 'makePost'.
-makePostInstance :: Name -> Q [Dec]
+makePostInstance ∷ Name → Q [Dec]
 makePostInstance n =
   return [InstanceD
           []
@@ -83,8 +84,8 @@ makePostInstance n =
           ]
          ]
     where
-      onG n = FunD (mkName n)
+      onG n' = FunD (mkName n')
               [ Clause [VarP (mkName "g")]
-                (NormalB (AppE (VarE (mkName $ n ++ "T"))
+                (NormalB (AppE (VarE (mkName $ n' ++ "T"))
                           (VarE (mkName "g")))) []
               ]
