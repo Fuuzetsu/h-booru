@@ -1,15 +1,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
 -- |
 -- Module      :  HBooru.Parsers.Yandere
--- Copyright   :  (c) Mateusz Kowalczyk 2013
+-- Copyright   :  (c) Mateusz Kowalczyk 2013-2014
 -- License     :  GPL-3
 --
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
@@ -19,16 +16,17 @@
 -- known in the past as <http://mou.imouto.org MouImouto>.
 module HBooru.Parsers.Yandere where
 
-import           Data.List
-import           Data.Vinyl
-import           HBooru.Parsers.FieldParsers
-import           HBooru.Types
-import           Text.XML.HXT.Core hiding (mkName)
+import Data.List
+import Data.Vinyl
+import HBooru.Parsers.FieldParsers
+import HBooru.Types
+import Text.XML.HXT.Core hiding (mkName)
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
 data Yandere = Yandere
 
+-- | Alias for a record representing typical Yandere post.
 type YanderePost = PlainRec
   '[ "actual_preview_height" ::: Integer
    , "actual_preview_width" ::: Integer
@@ -67,43 +65,18 @@ type YanderePost = PlainRec
    , "width" ::: Integer
    ]
 
+-- | Parser arrow for XML Yandere posts.
 parsePost ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒ cat XmlTree YanderePost
 parsePost = hasName "post"
-  >>> actual_preview_heightA
-  <:+> actual_preview_widthA
-  <:+> authorA
-  <:+> changeA
-  <:+> created_atA
-  <:+> creator_idA
-  <:+> file_sizeA
-  <:+> file_urlA
-  <:+> framesA
-  <:+> frames_pendingA
-  <:+> frames_pending_stringA
-  <:+> frames_stringA
-  <:+> has_childrenA
-  <:+> heightA
-  <:+> idA
-  <:+> is_heldA
-  <:+> is_shown_in_indexA
-  <:+> jpeg_file_sizeA
-  <:+> jpeg_heightA
-  <:+> jpeg_urlA
-  <:+> jpeg_widthA
-  <:+> md5A
-  <:+> preview_heightA
-  <:+> preview_urlA
-  <:+> preview_widthA
-  <:+> ratingA
-  <:+> sample_file_sizeA
-  <:+> sample_heightA
-  <:+> sample_urlA
-  <:+> sample_widthA
-  <:+> scoreA
-  <:+> sourceA
-  <:+> statusA
-  <:+> tagsA
-  <:+> widthA
+  >>> actual_preview_heightA <:+> actual_preview_widthA <:+> authorA
+  <:+> changeA <:+> created_atA <:+> creator_idA <:+> file_sizeA <:+> file_urlA
+  <:+> framesA <:+> frames_pendingA <:+> frames_pending_stringA
+  <:+> frames_stringA <:+> has_childrenA <:+> heightA <:+> idA <:+> is_heldA
+  <:+> is_shown_in_indexA <:+> jpeg_file_sizeA <:+> jpeg_heightA <:+> jpeg_urlA
+  <:+> jpeg_widthA <:+> md5A <:+> preview_heightA <:+> preview_urlA
+  <:+> preview_widthA <:+> ratingA <:+> sample_file_sizeA <:+> sample_heightA
+  <:+> sample_urlA <:+> sample_widthA <:+> scoreA <:+> sourceA <:+> statusA
+  <:+> tagsA <:+> widthA
 
 instance Postable Yandere XML where
   postUrl _ _ ts =

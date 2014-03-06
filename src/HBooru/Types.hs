@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FunctionalDependencies #-}
@@ -10,7 +8,7 @@
 
 -- |
 -- Module      :  HBooru.Types
--- Copyright   :  (c) Mateusz Kowalczyk 2013
+-- Copyright   :  (c) Mateusz Kowalczyk 2013-2014
 -- License     :  GPL-3
 --
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
@@ -160,119 +158,121 @@ instance Response JSONResponse where
   getResponse (JSONResponse x) = x
 
 
-height'' ∷ "height" ::: Integer
-height'' = Field
-
-score'' ∷ "score" ::: Integer
-score'' = Field
-
-file_url'' ∷ "file_url" ::: String
-file_url'' = Field
-
-parent_id'' ∷ "parent_id" ::: Maybe Integer
-parent_id'' = Field
-
-sample_url'' ∷ "sample_url" ::: String
-sample_url'' = Field
-
-sample_width'' ∷ "sample_width" ::: Integer
-sample_width'' = Field
-
-sample_height'' ∷ "sample_height" ::: Integer
-sample_height'' = Field
-
-preview_url'' ∷ "preview_url" ::: String
-preview_url'' = Field
-
-rating'' ∷ "rating" ::: Rating
-rating'' = Field
-
-tags'' ∷ "tags" ::: [String]
-tags'' = Field
-
-id'' ∷ "id" ::: Integer
-id'' = Field
-
-width'' ∷ "width" ::: Integer
-width'' = Field
-
-change'' ∷ "change" ::: String
-change'' = Field
-
-md5'' ∷ "md5" ::: String
-md5'' = Field
-
-creator_id'' ∷ "creator_id" ::: Integer
-creator_id'' = Field
-
-has_children'' ∷ "has_children" ::: Bool
-has_children'' = Field
-
-created_at'' ∷ "created_at" ::: String
-created_at'' = Field
-
-status'' ∷ "status" ::: String
-status'' = Field
-
-source'' ∷ "source" ::: String
-source'' = Field
-
-has_notes'' ∷ "has_notes" ::: Maybe Bool
-has_notes'' = Field
-
-has_comments'' ∷ "has_comments" ::: Maybe Bool
-has_comments'' = Field
-
-preview_width'' ∷ "preview_width" ::: Integer
-preview_width'' = Field
-
-preview_height'' ∷ "preview_height" ::: Integer
-preview_height'' = Field
-
-author'' ∷ "author" ::: String
-author'' = Field
-
-frames'' ∷ "frames" ::: String
-frames'' = Field
-
-frames_pending'' ∷ "frames_pending" ::: String
-frames_pending'' = Field
-
-frames_pending_string'' ∷ "frames_pending_string" ::: String
-frames_pending_string'' = Field
-
-frames_string'' ∷ "frames_string" ::: String
-frames_string'' = Field
-
-is_held'' ∷ "is_held" ::: Bool
-is_held'' = Field
-
-is_shown_in_index'' ∷ "is_shown_in_index" ::: Bool
-is_shown_in_index'' = Field
-
-jpeg_file_size'' ∷ "jpeg_file_size" ::: String
-jpeg_file_size'' = Field
-
-jpeg_height'' ∷ "jpeg_height" ::: Integer
-jpeg_height'' = Field
-
-jpeg_url'' ∷ "jpeg_url" ::: String
-jpeg_url'' = Field
-
-jpeg_width'' ∷ "jpeg_width" ::: Integer
-jpeg_width'' = Field
-
-sample_file_size'' ∷ "sample_file_size" ::: String
-sample_file_size'' = Field
-
-actual_preview_height'' ∷ "actual_preview_height" ::: Integer
-actual_preview_height'' = Field
-
-actual_preview_width'' ∷ "actual_preview_width" ::: Integer
-actual_preview_width'' = Field
-
-file_size'' ∷ "file_size" ::: String
-file_size'' = Field
-
 instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g
+
+-- * Commonly used fields
+
+height ∷ "height" ::: Integer
+height = Field
+
+score ∷ "score" ::: Integer
+score = Field
+
+file_url ∷ "file_url" ::: String
+file_url = Field
+
+parent_id ∷ "parent_id" ::: Maybe Integer
+parent_id = Field
+
+sample_url ∷ "sample_url" ::: String
+sample_url = Field
+
+sample_width ∷ "sample_width" ::: Integer
+sample_width = Field
+
+sample_height ∷ "sample_height" ::: Integer
+sample_height = Field
+
+preview_url ∷ "preview_url" ::: String
+preview_url = Field
+
+rating ∷ "rating" ::: Rating
+rating = Field
+
+tags ∷ "tags" ::: [String]
+tags = Field
+
+id ∷ "id" ::: Integer
+id = Field
+
+width ∷ "width" ::: Integer
+width = Field
+
+change ∷ "change" ::: String
+change = Field
+
+md5 ∷ "md5" ::: String
+md5 = Field
+
+creator_id ∷ "creator_id" ::: Integer
+creator_id = Field
+
+has_children ∷ "has_children" ::: Bool
+has_children = Field
+
+created_at ∷ "created_at" ::: String
+created_at = Field
+
+status ∷ "status" ::: String
+status = Field
+
+source ∷ "source" ::: String
+source = Field
+
+has_notes ∷ "has_notes" ::: Maybe Bool
+has_notes = Field
+
+has_comments ∷ "has_comments" ::: Maybe Bool
+has_comments = Field
+
+preview_width ∷ "preview_width" ::: Integer
+preview_width = Field
+
+preview_height ∷ "preview_height" ::: Integer
+preview_height = Field
+
+author ∷ "author" ::: String
+author = Field
+
+frames ∷ "frames" ::: String
+frames = Field
+
+frames_pending ∷ "frames_pending" ::: String
+frames_pending = Field
+
+frames_pending_string ∷ "frames_pending_string" ::: String
+frames_pending_string = Field
+
+frames_string ∷ "frames_string" ::: String
+frames_string = Field
+
+is_held ∷ "is_held" ::: Bool
+is_held = Field
+
+is_shown_in_index ∷ "is_shown_in_index" ::: Bool
+is_shown_in_index = Field
+
+jpeg_file_size ∷ "jpeg_file_size" ::: String
+jpeg_file_size = Field
+
+jpeg_height ∷ "jpeg_height" ::: Integer
+jpeg_height = Field
+
+jpeg_url ∷ "jpeg_url" ::: String
+jpeg_url = Field
+
+jpeg_width ∷ "jpeg_width" ::: Integer
+jpeg_width = Field
+
+sample_file_size ∷ "sample_file_size" ::: String
+sample_file_size = Field
+
+actual_preview_height ∷ "actual_preview_height" ::: Integer
+actual_preview_height = Field
+
+actual_preview_width ∷ "actual_preview_width" ::: Integer
+actual_preview_width = Field
+
+file_size ∷ "file_size" ::: String
+file_size = Field

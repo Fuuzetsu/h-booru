@@ -1,15 +1,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
 
 -- |
 -- Module      :  HBooru.Parsers.Ichijou
--- Copyright   :  (c) Mateusz Kowalczyk 2013
+-- Copyright   :  (c) Mateusz Kowalczyk 2013-2014
 -- License     :  GPL-3
 --
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
@@ -28,6 +25,7 @@ import Text.XML.HXT.Core hiding (mkName)
 -- between various parsers.
 data Ichijou = Ichijou
 
+-- | Ichijou post record alias
 type IchijouPost = PlainRec
   '[ "creator_id" ::: Integer
    , "md5" ::: String
@@ -59,32 +57,11 @@ type IchijouPost = PlainRec
 -- | Parser arrow used for Ichijou.
 parsePost ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒ cat XmlTree IchijouPost
 parsePost = hasName "post"
-  >>> creator_idA
-  <:+> md5A
-  <:+> statusA
-  <:+> preview_heightA
-  <:+> has_notesA
-  <:+> authorA
-  <:+> sourceA
-  <:+> scoreA
-  <:+> file_sizeA
-  <:+> sample_widthA
-  <:+> widthA
-  <:+> file_urlA
-  <:+> sample_heightA
-  <:+> has_childrenA
-  <:+> tagsA
-  <:+> changeA
-  <:+> preview_urlA
-  <:+> has_commentsA
-  <:+> idA
-  <:+> sample_urlA
-  <:+> ratingA
-  <:+> created_atA
-  <:+> preview_widthA
-  <:+> parent_idA
-  <:+> heightA
-
+  >>> creator_idA <:+> md5A <:+> statusA <:+> preview_heightA <:+> has_notesA
+  <:+> authorA <:+> sourceA <:+> scoreA <:+> file_sizeA <:+> sample_widthA
+  <:+> widthA <:+> file_urlA <:+> sample_heightA <:+> has_childrenA <:+> tagsA
+  <:+> changeA <:+> preview_urlA <:+> has_commentsA <:+> idA <:+> sample_urlA
+  <:+> ratingA <:+> created_atA <:+> preview_widthA <:+> parent_idA <:+> heightA
 
 instance Postable Ichijou XML where
   postUrl _ _ ts =

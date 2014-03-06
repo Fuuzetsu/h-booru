@@ -1,14 +1,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
+
 -- |
 -- Module      :  HBooru.Parsers.Gelbooru
--- Copyright   :  (c) Mateusz Kowalczyk 2013
+-- Copyright   :  (c) Mateusz Kowalczyk 2013-2014
 -- License     :  GPL-3
 --
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
@@ -17,11 +15,11 @@
 -- Module for parsing content from <http://gelbooru.com/ Gelbooru>.
 module HBooru.Parsers.Gelbooru where
 
-import           Data.List
-import           Data.Vinyl
-import           HBooru.Parsers.FieldParsers
-import           HBooru.Types
-import           Text.XML.HXT.Core hiding (mkName)
+import Data.List
+import Data.Vinyl
+import HBooru.Parsers.FieldParsers
+import HBooru.Types
+import Text.XML.HXT.Core hiding (mkName)
 
 -- | Record used for Gelbooru posts
 type GelbooruPost = PlainRec
@@ -50,31 +48,14 @@ type GelbooruPost = PlainRec
    , "preview_height" ::: Integer
    ]
 
+-- | XML parser for Gelbooru used by "Postable Gelbooru XML" instance.
 parsePost ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒ cat XmlTree GelbooruPost
 parsePost = hasName "post"
-  >>> heightA
-  <:+> scoreA
-  <:+> file_urlA
-  <:+> parent_idA
-  <:+> sample_urlA
-  <:+> sample_widthA
-  <:+> sample_heightA
-  <:+> preview_urlA
-  <:+> ratingA
-  <:+> tagsA
-  <:+> idA
-  <:+> widthA
-  <:+> changeA
-  <:+> md5A
-  <:+> creator_idA
-  <:+> has_childrenA
-  <:+> created_atA
-  <:+> statusA
-  <:+> sourceA
-  <:+> has_notesA
-  <:+> has_commentsA
-  <:+> preview_widthA
-  <:+> preview_heightA
+  >>> heightA <:+> scoreA <:+> file_urlA <:+> parent_idA <:+> sample_urlA
+  <:+> sample_widthA <:+> sample_heightA <:+> preview_urlA <:+> ratingA
+  <:+> tagsA <:+> idA <:+> widthA <:+> changeA <:+> md5A <:+> creator_idA
+  <:+> has_childrenA <:+> created_atA <:+> statusA <:+> sourceA <:+> has_notesA
+  <:+> has_commentsA <:+> preview_widthA <:+> preview_heightA
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.

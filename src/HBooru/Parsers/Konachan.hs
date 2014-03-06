@@ -1,19 +1,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE Arrows #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 -- |
 -- Module      :  HBooru.Parsers.Konachan
--- Copyright   :  (c) Mateusz Kowalczyk 2013
+-- Copyright   :  (c) Mateusz Kowalczyk 2013-2014
 -- License     :  GPL-3
 --
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
@@ -23,16 +16,17 @@
 
 module HBooru.Parsers.Konachan where
 
-import           Data.List
-import           Data.Vinyl
-import           HBooru.Parsers.FieldParsers
-import           HBooru.Types
-import           Text.XML.HXT.Core hiding (mkName)
+import Data.List
+import Data.Vinyl
+import HBooru.Parsers.FieldParsers
+import HBooru.Types
+import Text.XML.HXT.Core hiding (mkName)
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
 data Konachan = Konachan
 
+-- | Konachan post record
 type KonachanPost = PlainRec
   '[ "actual_preview_height" ::: Integer
    , "actual_preview_width" ::: Integer
