@@ -29,8 +29,5 @@ library
     HBooru.Parsers.Konachan
     HBooru.Parsers.Safebooru
     HBooru.Parsers.Yandere
-    HBooru.Parsers.GenericBooru
-    HBooru.Parsers.GenericBooru.TH
-  -- other-modules:
   build-depends:       base >=4.6 && <5, hxt >= 9.3.1.2, template-haskell
                        , http-conduit, utf8-string, bytestring, vinyl

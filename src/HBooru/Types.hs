@@ -69,14 +69,14 @@ instance CoerceResponse JSON JSONResponse where
   toResponse _ = JSONResponse
   fromResponse _ = JSON
 
--- | Class specifying a parser that can fetch posts. A post usually consists of
--- links to the image, samples, and some meta-data. See
--- 'HBooru.Parsers.GenericBooru.GenericPost' for the kind of thing we usually
--- get out. The reason for this class is that sometimes we might get different
--- information based on the 'DataFormat' we use so we use type families to
--- denote this rather than forcing the library user to make do with our best
--- guess on what goes into the post. It also allows us to use different post
--- types for sites that provide different information.
+-- | Class specifying a parser that can fetch posts. A post usually
+-- consists of links to the image, samples, and some meta-data. The
+-- reason for this class is that sometimes we might get different
+-- information based on the 'DataFormat' we use so we use type
+-- families to denote this rather than forcing the library user to
+-- make do with our best guess on what goes into the post. It also
+-- allows us to use different post types for sites that provide
+-- different information.
 class (Site s, DataFormat r) ⇒ PostParser s r where
   type ImageTy s r
   -- | Given a parser working with 'DataFormat' specified by an instance of
@@ -158,68 +158,6 @@ instance Response XMLResponse where
 
 instance Response JSONResponse where
   getResponse (JSONResponse x) = x
-
--- | Class representing a best-case scenario post. We use this
--- to convert between different posts for each site while providing
--- uniform access. The methods are just the attributes of posts seen
--- on Gelbooru-like sites.
-class Post a where
-  height ∷ a → Integer
-  score ∷ a → Integer
-  file_url ∷ a → String
-  parent_id ∷ a → Maybe Integer
-  sample_url ∷ a → String
-  sample_width ∷ a → Integer
-  sample_height ∷ a → Integer
-  preview_url ∷ a → String
-  rating ∷ a → Rating
-  tags ∷ a → [String]
-  id ∷ a → Integer
-  width ∷ a → Integer
-  change ∷ a → String
-  md5 ∷ a → String
-  creator_id ∷ a → Integer
-  has_children ∷ a → Maybe Bool
-  created_at ∷ a → String
-  status ∷ a → String
-  source ∷ a → String
-  has_notes ∷ a → Maybe Bool
-  has_comments ∷ a → Maybe Bool
-  preview_width ∷ a → Integer
-  preview_height ∷ a → Integer
-  betweenPosts ∷ Post b ⇒ a → PostConstructor b → b
-  betweenPosts g c =
-    c (height g) (score g) (file_url g) (parent_id g) (sample_url g)
-      (sample_width g) (sample_height g) (preview_url g) (rating g)
-      (tags g) (id g) (width g) (change g) (md5 g) (creator_id g)
-      (has_children g) (created_at g) (status g) (source g) (has_notes g)
-      (has_comments g) (preview_width g) (preview_height g)
-
-type GenericFields =
-  [ "height" ::: Integer
-  , "score" ::: Integer
-  , "file_url" ::: String
-  , "parent_id" ::: Maybe Integer
-  , "sample_url" ::: String
-  , "sample_width" ::: Integer
-  , "sample_height" ::: Integer
-  , "preview_url" ::: String
-  , "rating" ::: Rating
-  , "tags" ::: [String]
-  , "id" ::: Integer
-  , "width" ::: Integer
-  , "change" ::: String
-  , "md5" ::: String
-  , "creator_id" ::: Integer
-  , "has_children" ::: Maybe Bool
-  , "created_at" ::: Integer
-  , "status" ::: String
-  , "source" ::: String
-  , "has_notes" ::: Maybe Bool
-  , "has_comments" ::: Maybe Bool
-  , "preview_width" ::: Integer
-  , "preview_height" ::: Integer
-  ]
 
 
 height'' ∷ "height" ::: Integer
@@ -335,15 +273,6 @@ actual_preview_width'' = Field
 
 file_size'' ∷ "file_size" ::: String
 file_size'' = Field
-
-type GenericPost' = PlainRec GenericFields
-
--- | A cludge for use with 'betweenPosts'
-type PostConstructor b =
-  Integer → Integer → String → Maybe Integer → String → Integer → Integer
-  → String → Rating → [String] → Integer → Integer → String → String
-  → Integer → Maybe Bool → String → String → String → Maybe Bool
-  → Maybe Bool → Integer → Integer → b
 
 instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g
