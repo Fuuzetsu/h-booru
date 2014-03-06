@@ -253,7 +253,7 @@ is_held = Field
 is_shown_in_index ∷ "is_shown_in_index" ::: Bool
 is_shown_in_index = Field
 
-jpeg_file_size ∷ "jpeg_file_size" ::: String
+jpeg_file_size ∷ "jpeg_file_size" ::: Integer
 jpeg_file_size = Field
 
 jpeg_height ∷ "jpeg_height" ::: Integer
@@ -265,7 +265,7 @@ jpeg_url = Field
 jpeg_width ∷ "jpeg_width" ::: Integer
 jpeg_width = Field
 
-sample_file_size ∷ "sample_file_size" ::: String
+sample_file_size ∷ "sample_file_size" ::: Integer
 sample_file_size = Field
 
 actual_preview_height ∷ "actual_preview_height" ::: Integer
@@ -274,5 +274,5 @@ actual_preview_height = Field
 actual_preview_width ∷ "actual_preview_width" ::: Integer
 actual_preview_width = Field
 
-file_size ∷ "file_size" ::: String
+file_size ∷ "file_size" ::: Integer
 file_size = Field

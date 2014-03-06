@@ -35,7 +35,7 @@ type IchijouPost = PlainRec
    , "author" ::: String
    , "source" ::: String
    , "score" ::: Integer
-   , "file_size" ::: String
+   , "file_size" ::: Integer
    , "sample_width" ::: Integer
    , "width" ::: Integer
    , "file_url" ::: String

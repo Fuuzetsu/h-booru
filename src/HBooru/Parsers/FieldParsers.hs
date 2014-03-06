@@ -200,8 +200,8 @@ is_shown_in_indexA = (is_shown_in_index =:)
 
 -- | Parser arrow for a "jpeg_file_size" XML attribute.
 jpeg_file_sizeA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                  cat XmlTree (PlainRec '["jpeg_file_size" ::: String])
-jpeg_file_sizeA = (jpeg_file_size =:) <$> getAttrValue "jpeg_file_size"
+                  cat XmlTree (PlainRec '["jpeg_file_size" ::: Integer])
+jpeg_file_sizeA = (jpeg_file_size =:) . read <$> getAttrValue "jpeg_file_size"
 
 -- | Parser arrow for a "jpeg_height" XML attribute.
 jpeg_heightA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
@@ -220,13 +220,14 @@ jpeg_widthA = (jpeg_width =:) . read <$> getAttrValue "jpeg_width"
 
 -- | Parser arrow for a "sample_file_size" XML attribute.
 sample_file_sizeA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                    cat XmlTree (PlainRec '["sample_file_size" ::: String])
-sample_file_sizeA = (sample_file_size =:) <$> getAttrValue "sample_file_size"
+                    cat XmlTree (PlainRec '["sample_file_size" ::: Integer])
+sample_file_sizeA = (sample_file_size =:) . read
+                    <$> getAttrValue "sample_file_size"
 
 -- | Parser arrow for a "file_size" XML attribute.
 file_sizeA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                    cat XmlTree (PlainRec '["file_size" ::: String])
-file_sizeA = (file_size =:) <$> getAttrValue "file_size"
+                    cat XmlTree (PlainRec '["file_size" ::: Integer])
+file_sizeA = (file_size =:) . read <$> getAttrValue "file_size"
 
 
 -- * Parsing helpers

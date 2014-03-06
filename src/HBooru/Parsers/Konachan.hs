@@ -33,7 +33,7 @@ type KonachanPost = PlainRec
    , "author" ::: String
    , "change" ::: String
    , "created_at" ::: String
-   , "file_size" ::: String
+   , "file_size" ::: Integer
    , "file_url" ::: String
    , "frames" ::: String
    , "frames_pending" ::: String
@@ -44,7 +44,7 @@ type KonachanPost = PlainRec
    , "id" ::: Integer
    , "is_held" ::: Bool
    , "is_shown_in_index" ::: Bool
-   , "jpeg_file_size" ::: String
+   , "jpeg_file_size" ::: Integer
    , "jpeg_height" ::: Integer
    , "jpeg_url" ::: String
    , "jpeg_width" ::: Integer
@@ -53,7 +53,7 @@ type KonachanPost = PlainRec
    , "preview_url" ::: String
    , "preview_width" ::: Integer
    , "rating" ::: Rating
-   , "sample_file_size" ::: String
+   , "sample_file_size" ::: Integer
    , "sample_height" ::: Integer
    , "sample_url" ::: String
    , "sample_width" ::: Integer
