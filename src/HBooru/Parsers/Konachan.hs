@@ -23,24 +23,17 @@
 
 module HBooru.Parsers.Konachan where
 
-import           Control.Applicative
 import           Data.List
 import           Data.Vinyl
-import           Data.Vinyl.Unicode
-import           Data.Vinyl.Validation
-import qualified HBooru.Parsers.GenericBooru as G
-import           HBooru.Parsers.GenericBooru.TH (makePost)
 import           HBooru.Parsers.FieldParsers
 import           HBooru.Types
-import           Language.Haskell.TH (mkName)
-import           Text.XML.HXT.Core hiding (mkName, (<+>))
-import           Text.Read (readMaybe)
+import           Text.XML.HXT.Core hiding (mkName)
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
 data Konachan = Konachan
 
-type KonachanPost' = PlainRec
+type KonachanPost = PlainRec
   '[ "actual_preview_height" ::: Integer
    , "actual_preview_width" ::: Integer
    , "author" ::: String
@@ -78,7 +71,7 @@ type KonachanPost' = PlainRec
    ]
 
 -- | Parser arrow used for Konachan.
-parsePost ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒ cat XmlTree KonachanPost'
+parsePost ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒ cat XmlTree KonachanPost
 parsePost = hasName "post"
   >>> actual_preview_heightA <:+> actual_preview_widthA <:+> authorA
   <:+> changeA  <:+> created_atA <:+> file_sizeA <:+> file_urlA
@@ -93,14 +86,14 @@ parsePost = hasName "post"
 
 instance Postable Konachan XML where
   postUrl _ _ ts =
-    let tags = intercalate "+" ts
-    in "https://konachan.com/post/index.xml?tags=" ++ tags
+    let tags' = intercalate "+" ts
+    in "https://konachan.com/post/index.xml?tags=" ++ tags'
   hardLimit _ = Limit 100
 
 instance Site Konachan where
 
 instance PostParser Konachan XML where
-  type ImageTy Konachan XML = KonachanPost'
+  type ImageTy Konachan XML = KonachanPost
   parseResponse _ = runLA (xreadDoc /> parsePost) . getResponse
 
 instance Counted Konachan XML where
