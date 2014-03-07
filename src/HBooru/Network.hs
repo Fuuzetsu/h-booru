@@ -1,7 +1,7 @@
 {-# LANGUAGE UnicodeSyntax #-}
 -- |
 -- Module      :  HBooru.Network
--- Copyright   :  (c) Mateusz Kowalczyk 2013
+-- Copyright   :  (c) Mateusz Kowalczyk 2013-2014
 -- License     :  GPL-3
 --
 -- Maintainer  :  fuuzetsu@fuuzetsu.co.uk
