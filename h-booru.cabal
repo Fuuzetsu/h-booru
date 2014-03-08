@@ -31,3 +31,7 @@ library
     HBooru.Parsers.Yandere
   build-depends:       base >=4.6 && <5, hxt >= 9.3.1.2, template-haskell
                        , http-conduit, utf8-string, bytestring, vinyl
+
+source-repository head
+  type:     git
+  location: https://github.com/Fuuzetsu/h-booru.git
