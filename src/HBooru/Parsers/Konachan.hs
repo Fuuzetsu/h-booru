@@ -81,8 +81,11 @@ parsePost = hasName "post"
 instance Postable Konachan XML where
   postUrl _ _ ts =
     let tags' = intercalate "+" ts
-    in "https://konachan.com/post/index.xml?tags=" ++ tags'
-  hardLimit _ = Limit 100
+    in "https://konachan.com/post/index.xml?tags=" ++ tags' ++ "&limit=1000"
+  hardLimit _ _ = Limit 100
+
+instance PostablePaged Konachan XML where
+  postUrlPaged s r ts i = postUrl s r ts ++ "&page=" ++ show (i + 1)
 
 instance Site Konachan where
 

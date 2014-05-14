@@ -101,7 +101,14 @@ class (Site s, DataFormat r) ⇒ PostParser s r where
 -- allows us to get the information about total number of posts matching our
 -- query. Some sites don't provide this information.
 class (Site s, DataFormat r) ⇒ Counted s r where
+  -- | Parses out the number of available images from a response.
   parseCount ∷ CoerceResponse r r' ⇒ s → r' → Integer
+
+class (Counted s r, Postable s r) ⇒ PostablePaged s r where
+  -- | Similar to 'postUrl' but requests images from specific page if
+  -- the site allows it.
+  postUrlPaged ∷ s → r → [Tag] → Integer → String
+  postUrlPaged s r ts i = postUrl s r ts ++ "&pid=" ++ show i
 
 -- | If we can make an API request to 'Site' in a specific 'DataFormat', we can
 -- use instances of this class to pass in
@@ -115,7 +122,7 @@ class PostParser s r ⇒ Postable s r where
   -- posts we can fetch from the site at once. The reason for this function here
   -- rather than in 'Site' is that we might be parsing data without an API we
   -- can post to at all and we're getting our data through other means.
-  hardLimit ∷ s → Limit
+  hardLimit ∷ s → r → Limit
 
 -- | Describes a site for a parser. The reason why this isn't a simple data type
 -- is to allow us to write additional parsers in the future without modifying

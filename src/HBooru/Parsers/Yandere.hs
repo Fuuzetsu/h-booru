@@ -82,7 +82,10 @@ instance Postable Yandere XML where
   postUrl _ _ ts =
     let tgs = intercalate "+" ts
     in "https://yande.re/post/index.xml?tags=" ++ tgs
-  hardLimit _ = Limit 100
+  hardLimit _ _ = Limit 1000
+
+instance PostablePaged Yandere XML where
+  postUrlPaged s r ts i = postUrl s r ts ++ "&page=" ++ show (i + 1)
 
 instance Site Yandere where
 

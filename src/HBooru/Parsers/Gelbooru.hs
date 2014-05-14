@@ -65,8 +65,10 @@ instance Postable Gelbooru XML where
   postUrl _ _ ts =
     let tags' = intercalate "+" ts
     in "http://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags="
-       ++ tags' ++ "&pid=0"
-  hardLimit _ = Limit 100
+       ++ tags'
+  hardLimit _ _ = Limit 100
+
+instance PostablePaged Gelbooru XML
 
 instance Site Gelbooru where
 

@@ -65,8 +65,10 @@ instance Postable Safebooru XML where
   postUrl _ _ ts =
     let tags' = intercalate "+" ts
     in "http://safebooru.org/index.php?page=dapi&s=post&q=index&limit=100&tags="
-       ++ tags' ++ "&pid=0"
-  hardLimit _ = Limit 100
+       ++ tags'
+  hardLimit _ _ = Limit 100
+
+instance PostablePaged Safebooru XML
 
 instance Site Safebooru where
 
