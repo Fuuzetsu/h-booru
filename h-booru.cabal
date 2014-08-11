@@ -1,5 +1,5 @@
 name:                h-booru
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            Haskell library for retrieving data from various booru image sites
 description:         Haskell library for retrieving data from various booru image sites.
                      By providing a common interface for such sites and some parsers for

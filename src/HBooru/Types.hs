@@ -4,6 +4,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE GADTs #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
@@ -17,7 +19,9 @@
 -- Module definining types used by the library.
 module HBooru.Types where
 
+import Data.Singletons.TH
 import Data.Vinyl
+import Data.Vinyl.TH
 import Prelude hiding (id)
 import Text.XML.HXT.Core hiding (mkName, (<+>))
 
@@ -168,118 +172,56 @@ instance Response JSONResponse where
 instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g
 
--- * Commonly used fields
 
-height ∷ "height" ::: Integer
-height = Field
+-- | All fields that we potentiall use in each parser.
+data Fields = Height | Score | FileUrl | ParentId | SampleUrl | SampleWidth
+            | SampleHeight | PreviewUrl | Rating | Tags | Id | Width | Change
+            | Md5 | CreatorId | HasChildren | CreatedAt | Status | Source
+            | HasNotes | HasComments | PreviewWidth | PreviewHeight | Author
+            | Frames | FramesPending | FramesPendingString | FramesString
+            | IsHeld | IsShownInIndex | JpegFileSize | JpegUrl | JpegWidth
+            | JpegHeight | SampleFileSize | ActualPreviewHeight
+            | ActualPreviewWidth | FileSize
 
-score ∷ "score" ::: Integer
-score = Field
 
-file_url ∷ "file_url" ::: String
-file_url = Field
 
-parent_id ∷ "parent_id" ::: Maybe Integer
-parent_id = Field
-
-sample_url ∷ "sample_url" ::: String
-sample_url = Field
-
-sample_width ∷ "sample_width" ::: Integer
-sample_width = Field
-
-sample_height ∷ "sample_height" ::: Integer
-sample_height = Field
-
-preview_url ∷ "preview_url" ::: String
-preview_url = Field
-
-rating ∷ "rating" ::: Rating
-rating = Field
-
-tags ∷ "tags" ::: [String]
-tags = Field
-
-id ∷ "id" ::: Integer
-id = Field
-
-width ∷ "width" ::: Integer
-width = Field
-
-change ∷ "change" ::: String
-change = Field
-
-md5 ∷ "md5" ::: String
-md5 = Field
-
-creator_id ∷ "creator_id" ::: Integer
-creator_id = Field
-
-has_children ∷ "has_children" ::: Bool
-has_children = Field
-
-created_at ∷ "created_at" ::: String
-created_at = Field
-
-status ∷ "status" ::: String
-status = Field
-
-source ∷ "source" ::: String
-source = Field
-
-has_notes ∷ "has_notes" ::: Maybe Bool
-has_notes = Field
-
-has_comments ∷ "has_comments" ::: Maybe Bool
-has_comments = Field
-
-preview_width ∷ "preview_width" ::: Integer
-preview_width = Field
-
-preview_height ∷ "preview_height" ::: Integer
-preview_height = Field
-
-author ∷ "author" ::: String
-author = Field
-
-frames ∷ "frames" ::: String
-frames = Field
-
-frames_pending ∷ "frames_pending" ::: String
-frames_pending = Field
-
-frames_pending_string ∷ "frames_pending_string" ::: String
-frames_pending_string = Field
-
-frames_string ∷ "frames_string" ::: String
-frames_string = Field
-
-is_held ∷ "is_held" ::: Bool
-is_held = Field
-
-is_shown_in_index ∷ "is_shown_in_index" ::: Bool
-is_shown_in_index = Field
-
-jpeg_file_size ∷ "jpeg_file_size" ::: Integer
-jpeg_file_size = Field
-
-jpeg_height ∷ "jpeg_height" ::: Integer
-jpeg_height = Field
-
-jpeg_url ∷ "jpeg_url" ::: String
-jpeg_url = Field
-
-jpeg_width ∷ "jpeg_width" ::: Integer
-jpeg_width = Field
-
-sample_file_size ∷ "sample_file_size" ::: Integer
-sample_file_size = Field
-
-actual_preview_height ∷ "actual_preview_height" ::: Integer
-actual_preview_height = Field
-
-actual_preview_width ∷ "actual_preview_width" ::: Integer
-actual_preview_width = Field
-
-file_size ∷ "file_size" ::: Integer
-file_size = Field
+genSingletons [ ''Fields ]
+makeUniverse' ''Fields "ElF"
+semantics ''ElF [ 'Height :~> ''String
+                , 'Score :~> ''Integer
+                , 'FileUrl :~> ''String
+                , 'ParentId :~> ''Integer -- Maybe Integer
+                , 'SampleWidth :~> ''Integer
+                , 'SampleHeight :~> ''Integer
+                , 'PreviewUrl :~> ''String
+                , 'Rating :~> ''Rating
+                , 'Tags :~> ''String -- [String]
+                , 'Id :~> ''Integer
+                , 'Width :~> ''Integer
+                , 'Change :~> ''String
+                , 'Md5 :~> ''String
+                , 'CreatorId :~> ''Integer
+                , 'HasChildren :~> ''Bool
+                , 'CreatedAt :~> ''String
+                , 'Status :~> ''String
+                , 'Source :~> ''String
+                , 'HasNotes :~> ''Bool -- Maybe Bool
+                , 'HasComments :~> ''Bool -- Maybe Bool
+                , 'PreviewWidth :~> ''Integer
+                , 'PreviewHeight :~> ''Integer
+                , 'Author :~> ''String
+                , 'Frames :~> ''String
+                , 'FramesPending :~> ''String
+                , 'FramesPendingString :~> ''String
+                , 'FramesString :~> ''String
+                , 'IsHeld :~> ''Bool
+                , 'IsShownInIndex :~> ''Bool
+                , 'JpegFileSize :~> ''Integer
+                , 'JpegHeight :~> ''Integer
+                , 'JpegUrl :~> ''String
+                , 'JpegWidth :~> ''Integer
+                , 'SampleFileSize :~> ''Integer
+                , 'ActualPreviewHeight :~> ''Integer
+                , 'ActualPreviewWidth :~> ''Integer
+                , 'FileSize :~> ''Integer
+                ]
