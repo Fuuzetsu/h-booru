@@ -4,6 +4,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
@@ -17,7 +18,10 @@
 -- Module definining types used by the library.
 module HBooru.Types where
 
+import Data.Proxy
+import GHC.TypeLits (Symbol)
 import Data.Vinyl
+import Data.Vinyl.TH
 import Prelude hiding (id)
 import Text.XML.HXT.Core hiding (mkName, (<+>))
 
@@ -168,118 +172,162 @@ instance Response JSONResponse where
 instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g
 
+makeUniverse' ''Symbol "ElF"
+semantics ''ElF [ [t| "height" |]                :~> [t| Integer |]
+                , [t| "score" |]                 :~> [t| Integer |]
+                , [t| "file_url" |]              :~> [t| String |]
+                , [t| "parent_id" |]             :~> [t| Maybe Integer |]
+                , [t| "sample_url" |]            :~> [t| String |]
+                , [t| "sample_width" |]          :~> [t| Integer |]
+                , [t| "sample_height" |]         :~> [t| Integer |]
+                , [t| "preview_url" |]           :~> [t| String |]
+                , [t| "rating" |]                :~> [t| Rating |]
+                , [t| "tags" |]                  :~> [t| [Tag] |]
+                , [t| "id" |]                    :~> [t| Integer |]
+                , [t| "width" |]                 :~> [t| String |]
+                , [t| "change" |]                :~> [t| String |]
+                , [t| "md5" |]                   :~> [t| String |]
+                , [t| "creator_id" |]            :~> [t| Integer |]
+                , [t| "has_children" |]          :~> [t| Bool |]
+                , [t| "created_at" |]            :~> [t| String |]
+                , [t| "status" |]                :~> [t| String |]
+                , [t| "source" |]                :~> [t| String |]
+                , [t| "has_notes" |]             :~> [t| Maybe Bool |]
+                , [t| "has_comments" |]          :~> [t| Maybe Bool |]
+                , [t| "preview_width" |]         :~> [t| Integer |]
+                , [t| "preview_height" |]        :~> [t| Integer |]
+                , [t| "author" |]                :~> [t| String |]
+                , [t| "frames" |]                :~> [t| String |]
+                , [t| "frames_pending" |]        :~> [t| String |]
+                , [t| "frames_pending_string" |] :~> [t| String |]
+                , [t| "frames_string" |]         :~> [t| String |]
+                , [t| "is_held" |]               :~> [t| Bool |]
+                , [t| "is_shown_in_index" |]     :~> [t| Bool |]
+                , [t| "jpeg_file_size" |]        :~> [t| Integer |]
+                , [t| "jpeg_height" |]           :~> [t| Integer |]
+                , [t| "jpeg_url" |]              :~> [t| String |]
+                , [t| "jpeg_width" |]            :~> [t| Integer |]
+                , [t| "sample_file_size" |]      :~> [t| Integer |]
+                , [t| "actual_preview_height" |] :~> [t| Integer |]
+                , [t| "actual_preview_width" |]  :~> [t| Integer |]
+                , [t| "file_size" |]             :~> [t| Integer |]
+                ]
+
+-- | Handy synonym hiding 'ElF'.
+type R a = PlainRec ElF a
+
 -- * Commonly used fields
 
-height ∷ "height" ::: Integer
-height = Field
+height ∷ Proxy "height"
+height = Proxy
 
-score ∷ "score" ::: Integer
-score = Field
+score ∷ Proxy "score"
+score = Proxy
 
-file_url ∷ "file_url" ::: String
-file_url = Field
+file_url ∷ Proxy "file_url"
+file_url = Proxy
 
-parent_id ∷ "parent_id" ::: Maybe Integer
-parent_id = Field
+parent_id ∷ Proxy "parent_id"
+parent_id = Proxy
 
-sample_url ∷ "sample_url" ::: String
-sample_url = Field
+sample_url ∷ Proxy "sample_url"
+sample_url = Proxy
 
-sample_width ∷ "sample_width" ::: Integer
-sample_width = Field
+sample_width ∷ Proxy "sample_width"
+sample_width = Proxy
 
-sample_height ∷ "sample_height" ::: Integer
-sample_height = Field
+sample_height ∷ Proxy "sample_height"
+sample_height = Proxy
 
-preview_url ∷ "preview_url" ::: String
-preview_url = Field
+preview_url ∷ Proxy "preview_url"
+preview_url = Proxy
 
-rating ∷ "rating" ::: Rating
-rating = Field
+rating ∷ Proxy "rating"
+rating = Proxy
 
-tags ∷ "tags" ::: [String]
-tags = Field
+tags ∷ Proxy "tags"
+tags = Proxy
 
-id ∷ "id" ::: Integer
-id = Field
+id ∷ Proxy "id"
+id = Proxy
 
-width ∷ "width" ::: Integer
-width = Field
+width ∷ Proxy "width"
+width = Proxy
 
-change ∷ "change" ::: String
-change = Field
+change ∷ Proxy "change"
+change = Proxy
 
-md5 ∷ "md5" ::: String
-md5 = Field
+md5 ∷ Proxy "md5"
+md5 = Proxy
 
-creator_id ∷ "creator_id" ::: Integer
-creator_id = Field
+creator_id ∷ Proxy "creator_id"
+creator_id = Proxy
 
-has_children ∷ "has_children" ::: Bool
-has_children = Field
+has_children ∷ Proxy "has_children"
+has_children = Proxy
 
-created_at ∷ "created_at" ::: String
-created_at = Field
+created_at ∷ Proxy "created_at"
+created_at = Proxy
 
-status ∷ "status" ::: String
-status = Field
+status ∷ Proxy "status"
+status = Proxy
 
-source ∷ "source" ::: String
-source = Field
+source ∷ Proxy "source"
+source = Proxy
 
-has_notes ∷ "has_notes" ::: Maybe Bool
-has_notes = Field
+has_notes ∷ Proxy "has_notes"
+has_notes = Proxy
 
-has_comments ∷ "has_comments" ::: Maybe Bool
-has_comments = Field
+has_comments ∷ Proxy "has_comments"
+has_comments = Proxy
 
-preview_width ∷ "preview_width" ::: Integer
-preview_width = Field
+preview_width ∷ Proxy "preview_width"
+preview_width = Proxy
 
-preview_height ∷ "preview_height" ::: Integer
-preview_height = Field
+preview_height ∷ Proxy "preview_height"
+preview_height = Proxy
 
-author ∷ "author" ::: String
-author = Field
+author ∷ Proxy "author"
+author = Proxy
 
-frames ∷ "frames" ::: String
-frames = Field
+frames ∷ Proxy "frames"
+frames = Proxy
 
-frames_pending ∷ "frames_pending" ::: String
-frames_pending = Field
+frames_pending ∷ Proxy "frames_pending"
+frames_pending = Proxy
 
-frames_pending_string ∷ "frames_pending_string" ::: String
-frames_pending_string = Field
+frames_pending_string ∷ Proxy "frames_pending_string"
+frames_pending_string = Proxy
 
-frames_string ∷ "frames_string" ::: String
-frames_string = Field
+frames_string ∷ Proxy "frames_string"
+frames_string = Proxy
 
-is_held ∷ "is_held" ::: Bool
-is_held = Field
+is_held ∷ Proxy "is_held"
+is_held = Proxy
 
-is_shown_in_index ∷ "is_shown_in_index" ::: Bool
-is_shown_in_index = Field
+is_shown_in_index ∷ Proxy "is_shown_in_index"
+is_shown_in_index = Proxy
 
-jpeg_file_size ∷ "jpeg_file_size" ::: Integer
-jpeg_file_size = Field
+jpeg_file_size ∷ Proxy "jpeg_file_size"
+jpeg_file_size = Proxy
 
-jpeg_height ∷ "jpeg_height" ::: Integer
-jpeg_height = Field
+jpeg_height ∷ Proxy "jpeg_height"
+jpeg_height = Proxy
 
-jpeg_url ∷ "jpeg_url" ::: String
-jpeg_url = Field
+jpeg_url ∷ Proxy "jpeg_url"
+jpeg_url = Proxy
 
-jpeg_width ∷ "jpeg_width" ::: Integer
-jpeg_width = Field
+jpeg_width ∷ Proxy "jpeg_width"
+jpeg_width = Proxy
 
-sample_file_size ∷ "sample_file_size" ::: Integer
-sample_file_size = Field
+sample_file_size ∷ Proxy "sample_file_size"
+sample_file_size = Proxy
 
-actual_preview_height ∷ "actual_preview_height" ::: Integer
-actual_preview_height = Field
+actual_preview_height ∷ Proxy "actual_preview_height"
+actual_preview_height = Proxy
 
-actual_preview_width ∷ "actual_preview_width" ::: Integer
-actual_preview_width = Field
+actual_preview_width ∷ Proxy "actual_preview_width"
+actual_preview_width = Proxy
 
-file_size ∷ "file_size" ::: Integer
-file_size = Field
+file_size ∷ Proxy "file_size"
+file_size = Proxy
