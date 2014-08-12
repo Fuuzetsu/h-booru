@@ -30,203 +30,203 @@ import Text.XML.HXT.Core hiding (mkName, (<+>))
 
 -- | Parser arrow for a "height" XML attribute.
 heightA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-          cat XmlTree (PlainRec '["height" ::: Integer])
+          cat XmlTree (R '["height"])
 heightA = (height =:) . read <$> getAttrValue "height"
 
 -- | Parser arrow for a "score" XML attribute.
 scoreA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-         cat XmlTree (PlainRec '["score" ::: Integer])
+         cat XmlTree (R '["score"])
 scoreA = (score =:) . read <$> getAttrValue "score"
 
 -- | Parser arrow for a "file_url" XML attribute.
 file_urlA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-            cat XmlTree (PlainRec '["file_url" ::: String])
+            cat XmlTree (R '["file_url"])
 file_urlA = (file_url =:) <$> getAttrValue "file_url"
 
 -- | Parser arrow for a "parent_id" XML attribute.
 parent_idA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-             cat XmlTree (PlainRec '["parent_id" ::: Maybe Integer])
+             cat XmlTree (R '["parent_id"])
 parent_idA = (parent_id =:) . readMaybe <$> getAttrValue "parent_id"
 
 -- | Parser arrow for a "sample_url" XML attribute.
 sample_urlA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-              cat XmlTree (PlainRec '["sample_url" ::: String])
+              cat XmlTree (R '["sample_url"])
 sample_urlA = (sample_url =:) <$> getAttrValue "sample_url"
 
 -- | Parser arrow for a "sample_width" XML attribute.
 sample_widthA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                cat XmlTree (PlainRec '["sample_width" ::: Integer])
+                cat XmlTree (R '["sample_width"])
 sample_widthA = (sample_width =:) . read <$> getAttrValue "sample_width"
 
 -- | Parser arrow for a "sample_height" XML attribute.
 sample_heightA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                 cat XmlTree (PlainRec '["sample_height" ::: Integer])
+                 cat XmlTree (R '["sample_height"])
 sample_heightA = (sample_height =:) . read <$> getAttrValue "sample_height"
 
 -- | Parser arrow for a "preview_url" XML attribute.
 preview_urlA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-               cat XmlTree (PlainRec '["preview_url" ::: String])
+               cat XmlTree (R '["preview_url"])
 preview_urlA = (preview_url =:) <$> getAttrValue "preview_url"
 
 -- | Parser arrow for a "rating" XML attribute.
 ratingA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-          cat XmlTree (PlainRec '["rating" ::: Rating])
+          cat XmlTree (R '["rating"])
 ratingA = (rating =:) . parseRating <$> getAttrValue "rating"
 
 -- | Parser arrow for a "tags" XML attribute.
 tagsA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-        cat XmlTree (PlainRec '["tags" ::: [String]])
+        cat XmlTree (R '["tags"])
 tagsA = (tags =:) . parseTags <$> getAttrValue "tags"
 
 -- | Parser arrow for a "id" XML attribute.
 idA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-      cat XmlTree (PlainRec '["id" ::: Integer])
+      cat XmlTree (R '["id"])
 idA = (id =:) . read <$> getAttrValue "id"
 
 -- | Parser arrow for a "width" XML attribute.
 widthA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-         cat XmlTree (PlainRec '["width" ::: Integer])
+         cat XmlTree (R '["width"])
 widthA = (width =:) . read <$> getAttrValue "width"
 
 -- | Parser arrow for a "change" XML attribute.
 changeA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-          cat XmlTree (PlainRec '["change" ::: String])
+          cat XmlTree (R '["change"])
 changeA = (change =:) <$> getAttrValue "change"
 
 -- | Parser arrow for a "md5" XML attribute.
 md5A ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-       cat XmlTree (PlainRec '["md5" ::: String])
+       cat XmlTree (R '["md5"])
 md5A = (md5 =:) <$> getAttrValue "md5"
 
 -- | Parser arrow for a "creator_id" XML attribute.
 creator_idA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-              cat XmlTree (PlainRec '["creator_id" ::: Integer])
+              cat XmlTree (R '["creator_id"])
 creator_idA = (creator_id =:) . read <$> getAttrValue "creator_id"
 
 -- | Parser arrow for a "has_children" XML attribute.
 has_childrenA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                cat XmlTree (PlainRec '["has_children" ::: Bool])
+                cat XmlTree (R '["has_children"])
 has_childrenA = (has_children =:) . fromMaybe (error "has_childrenA")
                 . parseBool <$> getAttrValue "has_children"
 
 -- | Parser arrow for a "created_at" XML attribute.
 created_atA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-              cat XmlTree (PlainRec '["created_at" ::: String])
+              cat XmlTree (R '["created_at"])
 created_atA = (created_at =:) <$> getAttrValue "created_at"
 
 -- | Parser arrow for a "status" XML attribute.
 statusA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-          cat XmlTree (PlainRec '["status" ::: String])
+          cat XmlTree (R '["status"])
 statusA = (status =:) <$> getAttrValue "status"
 
 -- | Parser arrow for a "source" XML attribute.
 sourceA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-          cat XmlTree (PlainRec '["source" ::: String])
+          cat XmlTree (R '["source"])
 sourceA = (source =:) <$> getAttrValue "source"
 
 -- | Parser arrow for a "has_notes" XML attribute.
 has_notesA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-             cat XmlTree (PlainRec '["has_notes" ::: Maybe Bool])
+             cat XmlTree (R '["has_notes"])
 has_notesA = (has_notes =:) . parseBool <$> getAttrValue "has_notes"
 
 -- | Parser arrow for a "has_comments" XML attribute.
 has_commentsA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                cat XmlTree (PlainRec '["has_comments" ::: Maybe Bool])
+                cat XmlTree (R '["has_comments"])
 has_commentsA = (has_comments =:) . parseBool <$> getAttrValue "has_comments"
 
 -- | Parser arrow for a "preview_width" XML attribute.
 preview_widthA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                 cat XmlTree (PlainRec '["preview_width" ::: Integer])
+                 cat XmlTree (R '["preview_width"])
 preview_widthA = (preview_width =:) . read <$> getAttrValue "preview_width"
 
 -- | Parser arrow for a "preview_height" XML attribute.
 preview_heightA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                  cat XmlTree (PlainRec '["preview_height" ::: Integer])
+                  cat XmlTree (R '["preview_height"])
 preview_heightA = (preview_height =:) . read <$> getAttrValue "preview_height"
 
 -- | Parser arrow for a "author" XML attribute.
 authorA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-          cat XmlTree (PlainRec '["author" ::: String])
+          cat XmlTree (R '["author"])
 authorA = (author =:) <$> getAttrValue "author"
 
 -- | Parser arrow for a "actual_preview_height" XML attribute.
 actual_preview_heightA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
                          cat XmlTree
-                             (PlainRec '["actual_preview_height" ::: Integer])
+                             (R '["actual_preview_height"])
 actual_preview_heightA = (actual_preview_height =:) . read
                          <$> getAttrValue "actual_preview_height"
 
 -- | Parser arrow for a "actual_preview_width" XML attribute.
 actual_preview_widthA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
                          cat XmlTree
-                             (PlainRec '["actual_preview_width" ::: Integer])
+                             (R '["actual_preview_width"])
 actual_preview_widthA = (actual_preview_width =:) . read
                         <$> getAttrValue "actual_preview_width"
 
 -- | Parser arrow for a "frames" XML attribute.
 framesA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-          cat XmlTree (PlainRec '["frames" ::: String])
+          cat XmlTree (R '["frames"])
 framesA = (frames =:) <$> getAttrValue "frames"
 
 -- | Parser arrow for a "frames_pending" XML attribute.
 frames_pendingA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                  cat XmlTree (PlainRec '["frames_pending" ::: String])
+                  cat XmlTree (R '["frames_pending"])
 frames_pendingA = (frames_pending =:) <$> getAttrValue "frames_pending"
 
 -- | Parser arrow for a "frames_pending_string" XML attribute.
 frames_pending_stringA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
                          cat XmlTree
-                             (PlainRec '["frames_pending_string" ::: String])
+                             (R '["frames_pending_string"])
 frames_pending_stringA = (frames_pending_string =:)
                          <$> getAttrValue "frames_pending_string"
 
 -- | Parser arrow for a "frames_string" XML attribute.
 frames_stringA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                 cat XmlTree (PlainRec '["frames_string" ::: String])
+                 cat XmlTree (R '["frames_string"])
 frames_stringA = (frames_string =:) <$> getAttrValue "frames_string"
 
 -- | Parser arrow for a "is_held" XML attribute.
 is_heldA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-           cat XmlTree (PlainRec '["is_held" ::: Bool])
+           cat XmlTree (R '["is_held"])
 is_heldA = (is_held =:) . fromMaybe (error "is_heldA") . parseBool
            <$> getAttrValue "is_held"
 
 -- | Parser arrow for a "is_shown_in_index" XML attribute.
 is_shown_in_indexA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                     cat XmlTree (PlainRec '["is_shown_in_index" ::: Bool])
+                     cat XmlTree (R '["is_shown_in_index"])
 is_shown_in_indexA = (is_shown_in_index =:)
                      . fromMaybe (error "is_show_in_indexA") . parseBool
                      <$> getAttrValue "is_shown_in_index"
 
 -- | Parser arrow for a "jpeg_file_size" XML attribute.
 jpeg_file_sizeA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                  cat XmlTree (PlainRec '["jpeg_file_size" ::: Integer])
+                  cat XmlTree (R '["jpeg_file_size"])
 jpeg_file_sizeA = (jpeg_file_size =:) . read <$> getAttrValue "jpeg_file_size"
 
 -- | Parser arrow for a "jpeg_height" XML attribute.
 jpeg_heightA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-               cat XmlTree (PlainRec '["jpeg_height" ::: Integer])
+               cat XmlTree (R '["jpeg_height"])
 jpeg_heightA = (jpeg_height =:) . read <$> getAttrValue "jpeg_height"
 
 -- | Parser arrow for a "jpeg_url" XML attribute.
 jpeg_urlA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-            cat XmlTree (PlainRec '["jpeg_url" ::: String])
+            cat XmlTree (R '["jpeg_url"])
 jpeg_urlA = (jpeg_url =:) <$> getAttrValue "jpeg_url"
 
 -- | Parser arrow for a "jpeg_width" XML attribute.
 jpeg_widthA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-              cat XmlTree (PlainRec '["jpeg_width" ::: Integer])
+              cat XmlTree (R '["jpeg_width"])
 jpeg_widthA = (jpeg_width =:) . read <$> getAttrValue "jpeg_width"
 
 -- | Parser arrow for a "sample_file_size" XML attribute.
 sample_file_sizeA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                    cat XmlTree (PlainRec '["sample_file_size" ::: Integer])
+                    cat XmlTree (R '["sample_file_size"])
 sample_file_sizeA = (sample_file_size =:) . read
                     <$> getAttrValue "sample_file_size"
 
 -- | Parser arrow for a "file_size" XML attribute.
 file_sizeA ∷ (Functor (cat XmlTree), ArrowXml cat) ⇒
-                    cat XmlTree (PlainRec '["file_size" ::: Integer])
+                    cat XmlTree (R '["file_size"])
 file_sizeA = (file_size =:) . read <$> getAttrValue "file_size"
 
 
@@ -258,6 +258,5 @@ parseBool _ = Nothing
 infixr 5 <:+>
 -- | A little helper that lifts '<+>' into 'Arrow' which allows us to
 -- compose parsers returning records very easily.
-(<:+>) ∷ Arrow cat ⇒ cat b (Rec as f) → cat b (Rec bs f)
-       → cat b (Rec (as ++ bs) f)
+(<:+>) ∷ Arrow cat ⇒ cat b (R as) → cat b (R bs) → cat b (R (as ++ bs))
 x <:+> y = arr (uncurry (<+>)) <<< x &&& y
