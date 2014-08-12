@@ -27,42 +27,42 @@ import Text.XML.HXT.Core hiding (mkName)
 data Yandere = Yandere
 
 -- | Alias for a record representing typical Yandere post.
-type YanderePost = PlainRec
-  '[ "actual_preview_height" ::: Integer
-   , "actual_preview_width" ::: Integer
-   , "author" ::: String
-   , "change" ::: String
-   , "created_at" ::: String
-   , "creator_id" ::: Integer
-   , "file_size" ::: Integer
-   , "file_url" ::: String
-   , "frames" ::: String
-   , "frames_pending" ::: String
-   , "frames_pending_string" ::: String
-   , "frames_string" ::: String
-   , "has_children" ::: Bool
-   , "height" ::: Integer
-   , "id" ::: Integer
-   , "is_held" ::: Bool
-   , "is_shown_in_index" ::: Bool
-   , "jpeg_file_size" ::: Integer
-   , "jpeg_height" ::: Integer
-   , "jpeg_url" ::: String
-   , "jpeg_width" ::: Integer
-   , "md5" ::: String
-   , "preview_height" ::: Integer
-   , "preview_url" ::: String
-   , "preview_width" ::: Integer
-   , "rating" ::: Rating
-   , "sample_file_size" ::: Integer
-   , "sample_height" ::: Integer
-   , "sample_url" ::: String
-   , "sample_width" ::: Integer
-   , "score" ::: Integer
-   , "source" ::: String
-   , "status" ::: String
-   , "tags" ::: [Tag]
-   , "width" ::: Integer
+type YanderePost = R
+  '[ "actual_preview_height"
+   , "actual_preview_width"
+   , "author"
+   , "change"
+   , "created_at"
+   , "creator_id"
+   , "file_size"
+   , "file_url"
+   , "frames"
+   , "frames_pending"
+   , "frames_pending_string"
+   , "frames_string"
+   , "has_children"
+   , "height"
+   , "id"
+   , "is_held"
+   , "is_shown_in_index"
+   , "jpeg_file_size"
+   , "jpeg_height"
+   , "jpeg_url"
+   , "jpeg_width"
+   , "md5"
+   , "preview_height"
+   , "preview_url"
+   , "preview_width"
+   , "rating"
+   , "sample_file_size"
+   , "sample_height"
+   , "sample_url"
+   , "sample_width"
+   , "score"
+   , "source"
+   , "status"
+   , "tags"
+   , "width"
    ]
 
 -- | Parser arrow for XML Yandere posts.

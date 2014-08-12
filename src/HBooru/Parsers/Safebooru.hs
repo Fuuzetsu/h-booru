@@ -26,30 +26,30 @@ import Text.XML.HXT.Core hiding (mkName)
 data Safebooru = Safebooru
 
 -- | Safebooru post record.
-type SafebooruPost = PlainRec
-  '[ "height" ::: Integer
-   , "score" ::: Integer
-   , "file_url" ::: String
-   , "parent_id" ::: Maybe Integer
-   , "sample_url" ::: String
-   , "sample_width" ::: Integer
-   , "sample_height" ::: Integer
-   , "preview_url" ::: String
-   , "rating" ::: Rating
-   , "tags" ::: [Tag]
-   , "id" ::: Integer
-   , "width" ::: Integer
-   , "change" ::: String
-   , "md5" ::: String
-   , "creator_id" ::: Integer
-   , "has_children" ::: Bool
-   , "created_at" ::: String
-   , "status" ::: String
-   , "source" ::: String
-   , "has_notes" ::: Maybe Bool
-   , "has_comments" ::: Maybe Bool
-   , "preview_width" ::: Integer
-   , "preview_height" ::: Integer
+type SafebooruPost = R
+  '[ "height"
+   , "score"
+   , "file_url"
+   , "parent_id"
+   , "sample_url"
+   , "sample_width"
+   , "sample_height"
+   , "preview_url"
+   , "rating"
+   , "tags"
+   , "id"
+   , "width"
+   , "change"
+   , "md5"
+   , "creator_id"
+   , "has_children"
+   , "created_at"
+   , "status"
+   , "source"
+   , "has_notes"
+   , "has_comments"
+   , "preview_width"
+   , "preview_height"
    ]
 
 -- | Parser arrow used for Safebooru.

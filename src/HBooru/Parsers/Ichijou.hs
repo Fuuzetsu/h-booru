@@ -26,32 +26,32 @@ import Text.XML.HXT.Core hiding (mkName)
 data Ichijou = Ichijou
 
 -- | Ichijou post record alias
-type IchijouPost = PlainRec
-  '[ "creator_id" ::: Integer
-   , "md5" ::: String
-   , "status" ::: String
-   , "preview_height" ::: Integer
-   , "has_notes" ::: Maybe Bool
-   , "author" ::: String
-   , "source" ::: String
-   , "score" ::: Integer
-   , "file_size" ::: Integer
-   , "sample_width" ::: Integer
-   , "width" ::: Integer
-   , "file_url" ::: String
-   , "sample_height" ::: Integer
-   , "has_children" ::: Bool
-   , "tags" ::: [Tag]
-   , "change" ::: String
-   , "preview_url" ::: String
-   , "has_comments" ::: Maybe Bool
-   , "id" ::: Integer
-   , "sample_url" ::: String
-   , "rating" ::: Rating
-   , "created_at" ::: String
-   , "preview_width" ::: Integer
-   , "parent_id" ::: Maybe Integer
-   , "height" ::: Integer
+type IchijouPost = R
+  '[ "creator_id"
+   , "md5"
+   , "status"
+   , "preview_height"
+   , "has_notes"
+   , "author"
+   , "source"
+   , "score"
+   , "file_size"
+   , "sample_width"
+   , "width"
+   , "file_url"
+   , "sample_height"
+   , "has_children"
+   , "tags"
+   , "change"
+   , "preview_url"
+   , "has_comments"
+   , "id"
+   , "sample_url"
+   , "rating"
+   , "created_at"
+   , "preview_width"
+   , "parent_id"
+   , "height"
    ]
 
 -- | Parser arrow used for Ichijou.
