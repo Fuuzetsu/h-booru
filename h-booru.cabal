@@ -1,5 +1,5 @@
 name:                h-booru
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            Haskell library for retrieving data from various booru image sites
 description:         Haskell library for retrieving data from various booru image sites.
                      By providing a common interface for such sites and some parsers for
@@ -30,7 +30,7 @@ library
     HBooru.Parsers.Safebooru
     HBooru.Parsers.Yandere
   build-depends:       base >=4.6 && <5, hxt >= 9.3.1.2, template-haskell
-                       , http-conduit, utf8-string, bytestring, vinyl
+                       , http-conduit, utf8-string, bytestring, vinyl >= 0.4
 
 
 executable h-booru
@@ -46,7 +46,7 @@ executable h-booru
     HBooru.Parsers.Safebooru
     HBooru.Parsers.Yandere
   build-depends:       base >=4.6 && <5, hxt >= 9.3.1.2, template-haskell
-                       , http-conduit, utf8-string, bytestring, vinyl
+                       , http-conduit, utf8-string, bytestring, vinyl >= 0.4
 
 source-repository head
   type:     git
