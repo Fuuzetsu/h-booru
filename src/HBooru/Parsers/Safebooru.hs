@@ -1,8 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UnicodeSyntax #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
 -- Module      :  HBooru.Parsers.Safebooru
@@ -16,17 +16,16 @@
 module HBooru.Parsers.Safebooru where
 
 import Data.List
-import Data.Vinyl
 import HBooru.Parsers.FieldParsers
 import HBooru.Types
 import Text.XML.HXT.Core hiding (mkName)
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
-data Safebooru = Safebooru
+data Safebooru = Safebooru deriving (Show, Eq)
 
 -- | Safebooru post record.
-type SafebooruPost = R
+type SafebooruPost = PR
   '[ "height"
    , "score"
    , "file_url"

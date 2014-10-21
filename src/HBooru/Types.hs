@@ -1,11 +1,11 @@
-{-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UnicodeSyntax #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
 -- Module      :  HBooru.Types
@@ -18,11 +18,15 @@
 -- Module definining types used by the library.
 module HBooru.Types where
 
+import Control.Arrow
+import Control.Applicative
+import Control.Monad
+import Control.Monad.Error
 import Data.Proxy
 import GHC.TypeLits (Symbol)
 import Data.Vinyl
 import Data.Vinyl.TH
-import Prelude hiding (id)
+import Prelude
 import Text.XML.HXT.Core hiding (mkName, (<+>))
 
 -- | Tags used for searching in sites. No special escaping is done.
@@ -168,9 +172,29 @@ instance Response XMLResponse where
 instance Response JSONResponse where
   getResponse (JSONResponse x) = x
 
-
 instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g
+
+bA ∷ ArrowApply cat ⇒ cat c' b → (b → cat c' c) → cat c' c
+bA mx f = (arr (\a -> mx >>> arr (\x -> (f x, a)) >>> app) &&& arr id) >>> app
+
+instance Applicative (LA XmlTree) where
+  pure x = LA . const $ return x
+  (<*>) = ap
+
+instance Monad (LA XmlTree) where
+  return = pure
+  (>>=) = bA
+
+-- | Parse failures from various parsers
+newtype ParseFailure = PF String deriving (Show, Eq)
+
+instance Error ParseFailure where
+  noMsg = PF noMsg
+  strMsg = PF . strMsg
+
+-- | Alias for our parser monad with failure possibility
+type Parse = Either ParseFailure
 
 makeUniverse' ''Symbol "ElF"
 semantics ''ElF [ [t| "height" |]                :~> [t| Integer |]
@@ -184,8 +208,8 @@ semantics ''ElF [ [t| "height" |]                :~> [t| Integer |]
                 , [t| "rating" |]                :~> [t| Rating |]
                 , [t| "tags" |]                  :~> [t| [Tag] |]
                 , [t| "id" |]                    :~> [t| Integer |]
-                , [t| "width" |]                 :~> [t| String |]
-                , [t| "change" |]                :~> [t| String |]
+                , [t| "width" |]                 :~> [t| Integer |]
+                , [t| "change" |]                :~> [t| Int |]
                 , [t| "md5" |]                   :~> [t| String |]
                 , [t| "creator_id" |]            :~> [t| Integer |]
                 , [t| "has_children" |]          :~> [t| Bool |]
@@ -215,6 +239,9 @@ semantics ''ElF [ [t| "height" |]                :~> [t| Integer |]
 
 -- | Handy synonym hiding 'ElF'.
 type R a = PlainRec ElF a
+
+-- | 'R' wrapped in a 'Parse'.
+type PR a = Parse (R a)
 
 -- * Commonly used fields
 

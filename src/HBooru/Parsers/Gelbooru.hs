@@ -1,8 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UnicodeSyntax #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
 -- Module      :  HBooru.Parsers.Gelbooru
@@ -16,13 +16,12 @@
 module HBooru.Parsers.Gelbooru where
 
 import Data.List
-import Data.Vinyl
 import HBooru.Parsers.FieldParsers
 import HBooru.Types
 import Text.XML.HXT.Core hiding (mkName)
 
 -- | Record used for Gelbooru posts
-type GelbooruPost = R
+type GelbooruPost = PR
   '[ "height"
    , "score"
    , "file_url"
@@ -59,7 +58,7 @@ parsePost = hasName "post"
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
-data Gelbooru = Gelbooru
+data Gelbooru = Gelbooru deriving (Show, Eq)
 
 instance Postable Gelbooru XML where
   postUrl _ _ ts =

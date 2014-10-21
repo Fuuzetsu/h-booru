@@ -1,8 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UnicodeSyntax #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
 -- Module      :  HBooru.Parsers.Konachan
@@ -17,17 +17,16 @@
 module HBooru.Parsers.Konachan where
 
 import Data.List
-import Data.Vinyl
 import HBooru.Parsers.FieldParsers
 import HBooru.Types
 import Text.XML.HXT.Core hiding (mkName)
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
-data Konachan = Konachan
+data Konachan = Konachan deriving (Show, Eq)
 
 -- | Konachan post record
-type KonachanPost = R
+type KonachanPost = PR
   '[ "actual_preview_height"
    , "actual_preview_width"
    , "author"

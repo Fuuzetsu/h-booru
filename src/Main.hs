@@ -1,9 +1,11 @@
 {-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE DataKinds #-}
 module Main where
 
 import Control.Applicative ((<$>))
-import Data.Vinyl
+import Data.Vinyl (rGet)
 import HBooru.Network
 import HBooru.Parsers.Gelbooru
 import HBooru.Parsers.Ichijou
@@ -16,11 +18,14 @@ import System.Environment (getArgs)
 main ∷ IO ()
 main = getArgs >>= \case
   [] → putStrLn help
-  xs → fetchImageLinks xs >>= mapM_ putStrLn
+  xs → fetchImageLinks xs >>= \x → mapM_ putStrLn [ y | Right y ← x ]
 
-fetchImageLinks ∷ [Tag] → IO [String]
+fetchImageLinks ∷ [Tag] → IO [Parse String]
 fetchImageLinks xs = do
-  let f p = map (file_url `rGet`) <$> fetchAllTaggedPosts p XML xs
+  let f p = map getUrl <$> fetchAllTaggedPosts p XML xs
+        where
+          getUrl (Left (PF m)) = Left . PF $ unwords [show p, m]
+          getUrl (Right r) = return $ file_url `rGet` r
   g ← f Gelbooru
   i ← f Ichijou
   k ← f Konachan
@@ -31,7 +36,7 @@ fetchImageLinks xs = do
 
 help ∷ String
 help = unlines $
-       [ "Usage: h-booru tag1 [tag2] … [tagn]"
-       , ""
-       , "Prints a list of links matching the tags"
-       ]
+  [ "Usage: h-booru tag1 [tag2] … [tagn]"
+  , ""
+  , "Prints a list of links matching the tags"
+  ]

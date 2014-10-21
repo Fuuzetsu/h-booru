@@ -1,4 +1,6 @@
 {-# LANGUAGE UnicodeSyntax #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
+
 -- |
 -- Module      :  HBooru.Network
 -- Copyright   :  (c) Mateusz Kowalczyk 2013-2014
@@ -60,7 +62,7 @@ fetchPostCount s d ts = parseCount s <$> fetchPostPage s d ts
 fetchAllTaggedPosts
   ∷ (CoerceResponse r a, PostablePaged s r) ⇒ s → r → [Tag] → IO [ImageTy s r]
 fetchAllTaggedPosts s r ts = do
-  count ← fromIntegral <$> fetchPostCount s r ts
+  count ← fromIntegral <$> fetchPostCount s r ts ∷ IO Double
   let pages = case hardLimit s r of
         NoLimit → 0
         Limit x → max 0 (ceiling $ (count / fromIntegral x) - 1)

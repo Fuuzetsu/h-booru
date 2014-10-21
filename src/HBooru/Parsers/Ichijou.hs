@@ -1,8 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UnicodeSyntax #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UnicodeSyntax #-}
+{-# OPTIONS_HADDOCK show-extensions #-}
 
 -- |
 -- Module      :  HBooru.Parsers.Ichijou
@@ -16,17 +16,16 @@
 module HBooru.Parsers.Ichijou where
 
 import Data.List
-import Data.Vinyl
 import HBooru.Parsers.FieldParsers
 import HBooru.Types
 import Text.XML.HXT.Core hiding (mkName)
 
 -- | We use this type and its 'Site' instance to distinguish
 -- between various parsers.
-data Ichijou = Ichijou
+data Ichijou = Ichijou deriving (Show, Eq)
 
 -- | Ichijou post record alias
-type IchijouPost = R
+type IchijouPost = PR
   '[ "creator_id"
    , "md5"
    , "status"
