@@ -21,11 +21,13 @@ module HBooru.Types where
 import Control.Arrow
 import Control.Applicative
 import Control.Monad
+import Control.Exception
 import Control.Monad.Error
 import Data.Proxy
 import GHC.TypeLits (Symbol)
 import Data.Vinyl
 import Data.Vinyl.TH
+import Network.HTTP.Conduit (HttpException(..))
 import Prelude
 import Text.XML.HXT.Core hiding (mkName, (<+>))
 
@@ -195,6 +197,17 @@ instance Error ParseFailure where
 
 -- | Alias for our parser monad with failure possibility
 type Parse = Either ParseFailure
+
+data RealWorldExcs = Network HttpException
+                   | IOE IOException
+                   | SomethingElse String
+                   deriving (Show)
+
+instance Error RealWorldExcs where
+  noMsg = SomethingElse noMsg
+  strMsg = SomethingElse . strMsg
+
+type ExcIO a = ErrorT RealWorldExcs IO a
 
 makeUniverse' ''Symbol "ElF"
 semantics ''ElF [ [t| "height" |]                :~> [t| Integer |]

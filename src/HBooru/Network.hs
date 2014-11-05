@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UnicodeSyntax #-}
 {-# OPTIONS_HADDOCK show-extensions #-}
 
@@ -16,10 +18,18 @@
 module HBooru.Network where
 
 import Control.Applicative ((<$>))
-import HBooru.Types
-import Network.HTTP.Conduit (simpleHttp)
-import Data.ByteString.Lazy (toStrict)
+import Control.Concurrent
+import Control.Concurrent.STM
+import Control.Exception
+import Control.Monad
+import Control.Monad.IO.Class
+import Control.Monad.Trans.Error
+import Data.ByteString.Lazy (toStrict, writeFile)
 import Data.ByteString.UTF8
+import Data.Either (rights)
+import HBooru.Parsers.Ichijou
+import HBooru.Types
+import Network.HTTP.Conduit (simpleHttp, HttpException(..))
 
 -- | Given a 'Site', 'DataFormat' and a list of 'Tag's, naively fetch the first
 -- page or so and parse it to the appropriate image type. Both the site and the
@@ -27,34 +37,38 @@ import Data.ByteString.UTF8
 -- has to exist in an instance of 'CoerceResponse'. Uses 'fetchPostPage' to
 -- fetch the data.
 fetchTaggedPosts
-  ∷ (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → IO [ImageTy s d]
+  ∷ (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → ExcIO [ImageTy s d]
 fetchTaggedPosts s d ts = parseResponse s <$> fetchPostPage s d ts
 
 -- | As 'fetchTaggedPosts' but works with sites which allow indexing by page.
 fetchTaggedPostsIndexed ∷ (CoerceResponse r a, PostablePaged s r)
-                          ⇒ s → r → [Tag] → Integer → IO [ImageTy s r]
+                          ⇒ s → r → [Tag] → Integer → ExcIO [ImageTy s r]
 fetchTaggedPostsIndexed s d ts i =
   parseResponse s <$> fetchPostPageIndexed s d ts i
 
 -- | Given an instance of 'Postable', 'CoerceResponse', and a list of 'Tag's,
 -- fetch the post page.
-fetchPostPage ∷ (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → IO r
+fetchPostPage ∷ (Postable s d, CoerceResponse d r) ⇒ s → d → [Tag] → ExcIO r
 fetchPostPage s d ts = fetchResponse (postUrl s d ts) d
 
 -- | Given an instance of 'Postable', 'CoerceResponse', and a list of 'Tag's,
 -- fetch the post page.
 fetchPostPageIndexed ∷ (PostablePaged s d, CoerceResponse d r)
-                       ⇒ s → d → [Tag] → Integer → IO r
+                       ⇒ s → d → [Tag] → Integer → ExcIO r
 fetchPostPageIndexed s d ts i = fetchResponse (postUrlPaged s d ts i) d
 
 -- | Given a URL and protocol, tries to fetch a response.
-fetchResponse ∷ CoerceResponse r r' ⇒ String → r → IO r'
-fetchResponse u r = toResponse r . toString . toStrict <$> simpleHttp u
+fetchResponse ∷ CoerceResponse r r' ⇒ String → r → ExcIO r'
+fetchResponse u r = do
+  liftIO (try (simpleHttp u)) >>= \case
+    Left (e ∷ HttpException) → throwError $ Network e
+    Right x → return . toResponse r . toString . toStrict $ x
 
 -- | Uses 'fetchPostPage' to parse the number of posts available based on
 -- provided 'Tag's.
 fetchPostCount
-  ∷ (Postable s r, Counted s r, CoerceResponse r a) ⇒ s → r → [Tag] → IO Integer
+  ∷ (Postable s r, Counted s r, CoerceResponse r a) ⇒ s → r → [Tag]
+  → ExcIO Integer
 fetchPostCount s d ts = parseCount s <$> fetchPostPage s d ts
 
 -- | Attemps to fetch all posts from a site, from all its pages. The
@@ -62,8 +76,48 @@ fetchPostCount s d ts = parseCount s <$> fetchPostPage s d ts
 fetchAllTaggedPosts
   ∷ (CoerceResponse r a, PostablePaged s r) ⇒ s → r → [Tag] → IO [ImageTy s r]
 fetchAllTaggedPosts s r ts = do
-  count ← fromIntegral <$> fetchPostCount s r ts ∷ IO Double
-  let pages = case hardLimit s r of
-        NoLimit → 0
-        Limit x → max 0 (ceiling $ (count / fromIntegral x) - 1)
-  concat <$> mapM (fetchTaggedPostsIndexed s r ts) [0 .. pages]
+  runErrorT (fetchPostCount s r ts) >>= \case
+    Left e → print e >> return []
+    Right i → do
+      let count = fromIntegral i ∷ Double
+          pages = case hardLimit s r of
+            NoLimit → 0
+            Limit x → max 0 (ceiling $ (count / fromIntegral x) - 1)
+      r' ← mapM (runErrorT . fetchTaggedPostsIndexed s r ts) [0 .. pages]
+      return . concat $ rights r'
+
+data DownloadStatus = OK String
+                    | Failed (Either HttpException IOException, String)
+                    | EndOfQueue
+                    deriving Show
+
+-- | Downloads the given files. Writes the status information back to
+-- the provided TChan.
+downloadFiles ∷ [(String, FilePath)] -- ^ URL with save location
+              → TChan DownloadStatus -- ^ Channel to send back status info on
+              → Int -- ^ Max threads to run at once. Bounded to minimum of 1.
+              → IO ()
+downloadFiles ts ds mt = do
+  tv ← atomically $ newTVar ts
+  count ← atomically $ newTVar (0 ∷ Int)
+  let maxThreads = max 1 mt
+      wf x = x `seq` Data.ByteString.Lazy.writeFile x
+      modCount f = atomically $ modifyTVar count (\x -> max 0 (f x))
+      runDownload (url, path) =
+        try (simpleHttp url) >>= \case
+          Left (e ∷ HttpException) →
+            atomically . writeTChan ds $ Failed (Left e, url)
+          Right c → try (wf path c) >>= atomically . \case
+            Left (e ∷ IOException) → writeTChan ds $ Failed (Right e, url)
+            Right _ → writeTChan ds $ OK url
+      readVs = atomically $ liftM2 (,) (readTVar tv) (readTVar count)
+      spawnThreads = readVs >>= \case
+        ([], 0) → atomically $ writeTChan ds EndOfQueue
+        (ys, n) | n >= maxThreads → spawnThreads
+                | otherwise → case ys of
+                  [] → threadDelay 10000 >> spawnThreads
+                  x:xs → void $ do
+                    atomically (writeTVar tv xs)
+                    forkIO $ modCount succ >> runDownload x >> modCount pred
+                    spawnThreads
+  spawnThreads
