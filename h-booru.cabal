@@ -26,6 +26,7 @@ library
   exposed-modules:
     HBooru.Types
     HBooru.Network
+    HBooru.Parsers.FieldParsers
     HBooru.Parsers.Gelbooru
     HBooru.Parsers.Ichijou
     HBooru.Parsers.Konachan
@@ -52,6 +53,7 @@ executable h-booru
   other-modules:
     HBooru.Types
     HBooru.Network
+    HBooru.Parsers.FieldParsers
     HBooru.Parsers.Gelbooru
     HBooru.Parsers.Ichijou
     HBooru.Parsers.Konachan
