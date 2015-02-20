@@ -43,7 +43,7 @@ library
     , template-haskell
     , transformers
     , utf8-string
-    , vinyl >= 0.4
+    , vinyl >= 0.5
 
 executable h-booru
   ghc-options:         -O2 -threaded
@@ -72,7 +72,7 @@ executable h-booru
     , template-haskell
     , transformers
     , utf8-string
-    , vinyl >= 0.4
+    , vinyl >= 0.5
 
 source-repository head
   type:     git
