@@ -31,12 +31,12 @@ import Data.Maybe
 import Data.Monoid
 import Data.Typeable
 import Data.Vinyl
+import Data.Vinyl.TypeLevel
 import HBooru.Types
 import Prelude
 import Text.Read (readMaybe)
 import Text.XML.HXT.Core hiding (mkName, (<+>))
 
-import Data.Vinyl.TyFun
 
 newtype E = E String deriving (Show, Eq, Typeable)
 instance Exception E where
@@ -45,27 +45,27 @@ instance Exception E where
 type ParseArrow cat = (Functor (cat XmlTree), ArrowXml cat)
 
 -- | Alias for named fields
-type Field cat s = cat XmlTree (Parse (R '[s]))
+type Field cat s = cat XmlTree (PR '[s])
 
 -- | Helper that provides better error messages when a 'read' fails.
-readAttr ∷ (ArrowXml cat, Read (App ElF s), Functor (cat XmlTree)) ⇒ String
+readAttr ∷ (ArrowXml cat, Read (EL s), Functor (cat XmlTree)) ⇒ String
          → sing s → Field cat s
 readAttr s f = readAttrWith s f readMaybe
 
 readAttrWith ∷ (ArrowXml cat, Functor (cat XmlTree)) ⇒ String → sing s
-             → (String → Maybe (App ElF s)) → Field cat s
+             → (String → Maybe (EL s)) → Field cat s
 readAttrWith s f r = readCustom s f (\x → handler x $ r x)
   where
     handler inp Nothing = throwError . PF $ mconcat [s, ": '", inp, "'"]
     handler _ (Just x) = return x
 
 readCustom ∷ (ArrowXml cat, Functor (cat XmlTree)) ⇒ String
-           → sing s → (String → Parse (App ElF s)) → Field cat s
-readCustom s f h = fmap (f =:) . h <$> getAttrValue s
+           → sing s → (String → Parse (EL s)) → Field cat s
+readCustom s f h = fmap ((:& RNil) . VAL) . h <$> getAttrValue s
 
-readNormalAttr ∷ (ArrowXml cat, (App ElF s) ~ String, Functor (cat XmlTree))
+readNormalAttr ∷ (ArrowXml cat, (EL s) ~ String, Functor (cat XmlTree))
                ⇒ String → sing s → Field cat s
-readNormalAttr s f = return . (f =:) <$> getAttrValue s
+readNormalAttr s f = return . ((:& RNil) . VAL) <$> getAttrValue s
 
 -- * Individual attribute parsers
 

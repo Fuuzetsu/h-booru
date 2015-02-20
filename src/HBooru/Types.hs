@@ -1,7 +1,9 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UnicodeSyntax #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
@@ -26,7 +28,7 @@ import Control.Monad.Error
 import Data.Proxy
 import GHC.TypeLits (Symbol)
 import Data.Vinyl
-import Data.Vinyl.TH
+import Data.Vinyl.Derived
 import Network.HTTP.Conduit (HttpException(..))
 import Prelude
 import Text.XML.HXT.Core hiding (mkName, (<+>))
@@ -137,7 +139,7 @@ class PostParser s r ⇒ Postable s r where
 -- | Describes a site for a parser. The reason why this isn't a simple data type
 -- is to allow us to write additional parsers in the future without modifying
 -- this library if we wish to do so.
-class Site s where
+class Show s ⇒ Site s where
 
 -- | Rating used on *booru sites.
 data Rating = Safe | Questionable | Explicit deriving (Show, Eq)
@@ -178,7 +180,9 @@ instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g
 
 bA ∷ ArrowApply cat ⇒ cat c' b → (b → cat c' c) → cat c' c
-bA mx f = (arr (\a -> mx >>> arr (\x -> (f x, a)) >>> app) &&& arr id) >>> app
+bA mx f = (arr (\a -> mx >>> arr (\x -> (f x, a)) >>>
+                      app) &&& arr Prelude.id)
+          >>> app
 
 instance Applicative (LA XmlTree) where
   pure x = LA . const $ return x
@@ -209,49 +213,54 @@ instance Error RealWorldExcs where
 
 type ExcIO a = ErrorT RealWorldExcs IO a
 
-makeUniverse' ''Symbol "ElF"
-semantics ''ElF [ [t| "height" |]                :~> [t| Integer |]
-                , [t| "score" |]                 :~> [t| Integer |]
-                , [t| "file_url" |]              :~> [t| String |]
-                , [t| "parent_id" |]             :~> [t| Maybe Integer |]
-                , [t| "sample_url" |]            :~> [t| String |]
-                , [t| "sample_width" |]          :~> [t| Integer |]
-                , [t| "sample_height" |]         :~> [t| Integer |]
-                , [t| "preview_url" |]           :~> [t| String |]
-                , [t| "rating" |]                :~> [t| Rating |]
-                , [t| "tags" |]                  :~> [t| [Tag] |]
-                , [t| "id" |]                    :~> [t| Integer |]
-                , [t| "width" |]                 :~> [t| Integer |]
-                , [t| "change" |]                :~> [t| Int |]
-                , [t| "md5" |]                   :~> [t| String |]
-                , [t| "creator_id" |]            :~> [t| Integer |]
-                , [t| "has_children" |]          :~> [t| Bool |]
-                , [t| "created_at" |]            :~> [t| String |]
-                , [t| "status" |]                :~> [t| String |]
-                , [t| "source" |]                :~> [t| String |]
-                , [t| "has_notes" |]             :~> [t| Maybe Bool |]
-                , [t| "has_comments" |]          :~> [t| Maybe Bool |]
-                , [t| "preview_width" |]         :~> [t| Integer |]
-                , [t| "preview_height" |]        :~> [t| Integer |]
-                , [t| "author" |]                :~> [t| String |]
-                , [t| "frames" |]                :~> [t| String |]
-                , [t| "frames_pending" |]        :~> [t| String |]
-                , [t| "frames_pending_string" |] :~> [t| String |]
-                , [t| "frames_string" |]         :~> [t| String |]
-                , [t| "is_held" |]               :~> [t| Bool |]
-                , [t| "is_shown_in_index" |]     :~> [t| Bool |]
-                , [t| "jpeg_file_size" |]        :~> [t| Integer |]
-                , [t| "jpeg_height" |]           :~> [t| Integer |]
-                , [t| "jpeg_url" |]              :~> [t| String |]
-                , [t| "jpeg_width" |]            :~> [t| Integer |]
-                , [t| "sample_file_size" |]      :~> [t| Integer |]
-                , [t| "actual_preview_height" |] :~> [t| Integer |]
-                , [t| "actual_preview_width" |]  :~> [t| Integer |]
-                , [t| "file_size" |]             :~> [t| Integer |]
-                ]
+type family EL (f ∷ Symbol) ∷ ★ where
+  EL "height"                = Integer
+  EL "score"                 = Integer
+  EL "file_url"              = String
+  EL "parent_id"             = Maybe Integer
+  EL "sample_url"            = String
+  EL "sample_width"          = Integer
+  EL "sample_height"         = Integer
+  EL "preview_url"           = String
+  EL "rating"                = Rating
+  EL "tags"                  = [Tag]
+  EL "id"                    = Integer
+  EL "width"                 = Integer
+  EL "change"                = Int
+  EL "md5"                   = String
+  EL "creator_id"            = Integer
+  EL "has_children"          = Bool
+  EL "created_at"            = String
+  EL "status"                = String
+  EL "source"                = String
+  EL "has_notes"             = Maybe Bool
+  EL "has_comments"          = Maybe Bool
+  EL "preview_width"         = Integer
+  EL "preview_height"        = Integer
+  EL "author"                = String
+  EL "frames"                = String
+  EL "frames_pending"        = String
+  EL "frames_pending_string" = String
+  EL "frames_string"         = String
+  EL "is_held"               = Bool
+  EL "is_shown_in_index"     = Bool
+  EL "jpeg_file_size"        = Integer
+  EL "jpeg_height"           = Integer
+  EL "jpeg_url"              = String
+  EL "jpeg_width"            = Integer
+  EL "sample_file_size"      = Integer
+  EL "actual_preview_height" = Integer
+  EL "actual_preview_width"  = Integer
+  EL "file_size"             = Integer
+
+data VAL ∷ Symbol → ★ where
+  VAL ∷ ∀ s. EL s → VAL s
+
+unVAL ∷ VAL x → EL x
+unVAL (VAL x) = x
 
 -- | Handy synonym hiding 'ElF'.
-type R a = PlainRec ElF a
+type R a = Rec VAL a
 
 -- | 'R' wrapped in a 'Parse'.
 type PR a = Parse (R a)

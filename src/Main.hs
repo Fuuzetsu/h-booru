@@ -10,7 +10,8 @@ import Control.Concurrent.STM
 import Control.Monad (void, filterM)
 import Data.Map
 import Data.Monoid
-import Data.Vinyl (rGet)
+import Data.Vinyl (rget, Rec, RElem)
+import Data.Vinyl.TypeLevel (RIndex)
 import HBooru.Network
 import HBooru.Parsers.Gelbooru
 import HBooru.Parsers.Ichijou
@@ -38,7 +39,9 @@ downloadTo fp xs = doesDirectoryExist fp >>= \case
     let f p = run <$> fetchAllTaggedPosts p XML xs
           where
             run s =
-              fromList [ (md5 `rGet` r, file_url `rGet` r) | Right r ← s ]
+              fromList [ (unVAL $ md5 `rget` r,
+                          unVAL $ file_url `rget` r) | Right r ← s ]
+
     g ← f Gelbooru
     i ← f Ichijou
     k ← f Konachan
@@ -70,7 +73,7 @@ fetchImageLinks xs = do
   let f p = Prelude.map getInfo <$> fetchAllTaggedPosts p XML xs
         where
           getInfo (Left (PF m)) = Left . PF $ unwords [show p, m]
-          getInfo (Right r) = return $ file_url `rGet` r
+          getInfo (Right r) = return . unVAL $ file_url `rget` r
   g ← f Gelbooru
   i ← f Ichijou
   k ← f Konachan
