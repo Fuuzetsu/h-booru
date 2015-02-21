@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UnicodeSyntax #-}
@@ -27,6 +28,10 @@ import Control.Monad.Trans.Error
 import Data.ByteString.Lazy (toStrict, writeFile)
 import Data.ByteString.UTF8
 import Data.Either (rights)
+import Data.Monoid (mconcat)
+import Data.Traversable (traverse)
+import Data.List (intersect)
+import Data.List.Split (chunksOf)
 import HBooru.Parsers.Ichijou
 import HBooru.Types
 import Network.HTTP.Conduit (simpleHttp, HttpException(..))
@@ -73,18 +78,30 @@ fetchPostCount s d ts = parseCount s <$> fetchPostPage s d ts
 
 -- | Attemps to fetch all posts from a site, from all its pages. The
 -- upper limit of images per page is used.
-fetchAllTaggedPosts
-  ∷ (CoerceResponse r a, PostablePaged s r) ⇒ s → r → [Tag] → IO [ImageTy s r]
-fetchAllTaggedPosts s r ts = do
-  runErrorT (fetchPostCount s r ts) >>= \case
-    Left e → print e >> return []
-    Right i → do
-      let count = fromIntegral i ∷ Double
-          pages = case hardLimit s r of
-            NoLimit → 0
-            Limit x → max 0 (ceiling $ (count / fromIntegral x) - 1)
-      r' ← mapM (runErrorT . fetchTaggedPostsIndexed s r ts) [0 .. pages]
-      return . concat $ rights r'
+--
+-- This function deals with sites that impose a limit on number of
+-- tags accepted by taking intersection of requests for all the
+-- various tags to get around the limitation, hence the 'Eq'
+-- constraint.
+fetchAllTaggedPosts ∷ (CoerceResponse r a, PostablePaged s r, Eq (ImageTy s r))
+                      ⇒ s → r → [Tag] → IO [ImageTy s r]
+fetchAllTaggedPosts s r ts = case tagLimit s r of
+  Limit x → traverse run (chunksOf (fromIntegral x) ts) >>= return . \case
+    [] → []
+    i:is → Prelude.foldr Data.List.intersect i is
+  _ → run ts
+  where
+    run [] = return []
+    run ts' = do
+     runErrorT (fetchPostCount s r ts') >>= \case
+      Left e → print e >> return []
+      Right i → do
+        let count = fromIntegral i ∷ Double
+            pages = case hardLimit s r of
+              NoLimit → 0
+              Limit x → max 0 (ceiling $ (count / fromIntegral x) - 1)
+        r' ← mapM (runErrorT . fetchTaggedPostsIndexed s r ts) [0 .. pages]
+        return . concat $ rights r'
 
 data DownloadStatus = OK String
                     | Failed (Either HttpException IOException, String)

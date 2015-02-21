@@ -67,6 +67,7 @@ instance Postable Ichijou XML where
     let tags' = intercalate "+" ts
     in "http://ichijou.org/post/index.xml?tags=" ++ tags'
   hardLimit _ _ = Limit 1000
+  tagLimit _ _ = Limit 2
 
 instance PostablePaged Ichijou XML where
   postUrlPaged s r ts i = postUrl s r ts ++ "&page=" ++ show (i + 1)

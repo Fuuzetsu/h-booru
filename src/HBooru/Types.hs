@@ -1,10 +1,13 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UnicodeSyntax #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# OPTIONS_HADDOCK show-extensions #-}
@@ -28,7 +31,7 @@ import Control.Monad.Error
 import Data.Proxy
 import GHC.TypeLits (Symbol)
 import Data.Vinyl
-import Data.Vinyl.Derived
+import Data.Vinyl.TypeLevel
 import Network.HTTP.Conduit (HttpException(..))
 import Prelude
 import Text.XML.HXT.Core hiding (mkName, (<+>))
@@ -135,6 +138,17 @@ class PostParser s r ⇒ Postable s r where
   -- rather than in 'Site' is that we might be parsing data without an API we
   -- can post to at all and we're getting our data through other means.
   hardLimit ∷ s → r → Limit
+  -- | Limit on a number of tags we can ask for at once. Some sites
+  -- only allow a few tags to be requested at once but if we know this
+  -- information ahead of time, we can make up to that by making
+  -- multiple requests and unifying the results. Waste of bandwidth on
+  -- both sides due to braindead setting. Also means that there's no
+  -- reliable way of telling how many posts we're actually looking at
+  -- before unification…
+  --
+  -- Defaults to 'NoLimit'.
+  tagLimit ∷ s → r → Limit
+  tagLimit _ _ = NoLimit
 
 -- | Describes a site for a parser. The reason why this isn't a simple data type
 -- is to allow us to write additional parsers in the future without modifying
@@ -179,18 +193,15 @@ instance Response JSONResponse where
 instance Functor (LA XmlTree) where
   fmap f (LA g) = LA $ fmap fmap fmap f g
 
-bA ∷ ArrowApply cat ⇒ cat c' b → (b → cat c' c) → cat c' c
-bA mx f = (arr (\a -> mx >>> arr (\x -> (f x, a)) >>>
-                      app) &&& arr Prelude.id)
-          >>> app
-
 instance Applicative (LA XmlTree) where
   pure x = LA . const $ return x
   (<*>) = ap
 
 instance Monad (LA XmlTree) where
   return = pure
-  (>>=) = bA
+  mx >>= f = (arr (\a -> mx >>> arr (\x -> (f x, a)) >>>
+                      app) &&& arr Prelude.id)
+             >>> app
 
 -- | Parse failures from various parsers
 newtype ParseFailure = PF String deriving (Show, Eq)
@@ -253,11 +264,23 @@ type family EL (f ∷ Symbol) ∷ ★ where
   EL "actual_preview_width"  = Integer
   EL "file_size"             = Integer
 
+
 data VAL ∷ Symbol → ★ where
   VAL ∷ ∀ s. EL s → VAL s
 
+{- Seems evil, requires UndecidableInstances… -}
+deriving instance Show (EL x) ⇒ Show (VAL x)
+deriving instance Eq (EL x) ⇒ Eq (VAL x)
+deriving instance Ord (EL x) ⇒ Ord (VAL x)
+
 unVAL ∷ VAL x → EL x
 unVAL (VAL x) = x
+
+-- | Checks equality of the underlying MD5 in structures that have
+-- that information.
+eqByMD5 ∷ (RElem "md5" r (RIndex "md5" r), RElem "md5" r' (RIndex "md5" r'))
+          ⇒ Rec VAL r → Rec VAL r' → Bool
+eqByMD5 x y = unVAL (md5 `rget` x) == unVAL (md5 `rget` y)
 
 -- | Handy synonym hiding 'ElF'.
 type R a = Rec VAL a
