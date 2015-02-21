@@ -28,11 +28,9 @@ import Control.Monad.Trans.Error
 import Data.ByteString.Lazy (toStrict, writeFile)
 import Data.ByteString.UTF8
 import Data.Either (rights)
-import Data.Monoid (mconcat)
 import Data.Traversable (traverse)
 import Data.List (intersect)
 import Data.List.Split (chunksOf)
-import HBooru.Parsers.Ichijou
 import HBooru.Types
 import Network.HTTP.Conduit (simpleHttp, HttpException(..))
 
@@ -135,6 +133,6 @@ downloadFiles ts ds mt = do
                   [] → threadDelay 10000 >> spawnThreads
                   x:xs → void $ do
                     atomically (writeTVar tv xs)
-                    forkIO $ modCount succ >> runDownload x >> modCount pred
+                    _ ← forkIO $ modCount succ >> runDownload x >> modCount pred
                     spawnThreads
   spawnThreads

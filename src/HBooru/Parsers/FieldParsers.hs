@@ -61,11 +61,11 @@ readAttrWith s f r = readCustom s f (\x → handler x $ r x)
 
 readCustom ∷ (ArrowXml cat, Functor (cat XmlTree)) ⇒ String
            → sing s → (String → Parse (EL s)) → Field cat s
-readCustom s f h = fmap ((:& RNil) . VAL) . h <$> getAttrValue s
+readCustom s _ h = fmap ((:& RNil) . VAL) . h <$> getAttrValue s
 
 readNormalAttr ∷ (ArrowXml cat, (EL s) ~ String, Functor (cat XmlTree))
                ⇒ String → sing s → Field cat s
-readNormalAttr s f = return . ((:& RNil) . VAL) <$> getAttrValue s
+readNormalAttr s _ = return . ((:& RNil) . VAL) <$> getAttrValue s
 
 -- * Individual attribute parsers
 
@@ -252,12 +252,12 @@ parseBool _ = Nothing
 infixr 5 <:+>
 -- | A little helper that lifts '<+>' into 'Arrow' which allows us to
 -- compose parsers returning records very easily.
-(<:+>) ∷ Arrow cat ⇒ cat b (Parse (R as))
-       → cat b (Parse (R bs))
-       → cat b (Parse (R (as ++ bs)))
+(<:+>) ∷ Arrow cat ⇒ cat b (PR as)
+       → cat b (PR bs)
+       → cat b (PR (as ++ bs))
 x <:+> y = arr (uncurry pnd) <<< x &&& y
   where
-    pnd ∷ Parse (R a) → Parse (R b) → Parse (R (a ++ b))
+    pnd ∷ PR a → PR b → PR (a ++ b)
     pnd (Left x') _ = Left x'
     pnd _ (Left y') = Left y'
     pnd (Right x') (Right y') = Right (x' <+> y')

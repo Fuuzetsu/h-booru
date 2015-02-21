@@ -31,7 +31,6 @@ import Control.Monad.Error
 import Data.Proxy
 import GHC.TypeLits (Symbol)
 import Data.Vinyl
-import Data.Vinyl.TypeLevel
 import Network.HTTP.Conduit (HttpException(..))
 import Prelude
 import Text.XML.HXT.Core hiding (mkName, (<+>))
@@ -265,28 +264,15 @@ type family EL (f ∷ Symbol) ∷ ★ where
   EL "file_size"             = Integer
 
 
-data VAL ∷ Symbol → ★ where
-  VAL ∷ ∀ s. EL s → VAL s
+newtype VAL s = VAL { unVAL ∷ EL s }
 
-{- Seems evil, requires UndecidableInstances… -}
+-- Seems evil, requires UndecidableInstances…
 deriving instance Show (EL x) ⇒ Show (VAL x)
 deriving instance Eq (EL x) ⇒ Eq (VAL x)
 deriving instance Ord (EL x) ⇒ Ord (VAL x)
 
-unVAL ∷ VAL x → EL x
-unVAL (VAL x) = x
-
--- | Checks equality of the underlying MD5 in structures that have
--- that information.
-eqByMD5 ∷ (RElem "md5" r (RIndex "md5" r), RElem "md5" r' (RIndex "md5" r'))
-          ⇒ Rec VAL r → Rec VAL r' → Bool
-eqByMD5 x y = unVAL (md5 `rget` x) == unVAL (md5 `rget` y)
-
--- | Handy synonym hiding 'ElF'.
-type R a = Rec VAL a
-
 -- | 'R' wrapped in a 'Parse'.
-type PR a = Parse (R a)
+type PR a = Parse (Rec VAL a)
 
 -- * Commonly used fields
 

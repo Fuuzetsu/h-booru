@@ -9,11 +9,11 @@ import Control.Applicative ((<$>), (<*>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Async
 import Control.Concurrent.STM
-import Control.Monad (void, filterM)
+import Control.Monad (void)
 import Data.Map
 import Data.Monoid
-import Data.Vinyl (rget, Rec, RElem)
-import Data.Vinyl.TypeLevel (RIndex)
+import Data.Proxy
+import Data.Vinyl (rget)
 import HBooru.Network
 import HBooru.Parsers.Gelbooru
 import HBooru.Parsers.Ichijou
@@ -41,8 +41,9 @@ downloadTo fp xs = doesDirectoryExist fp >>= \case
     let f p = run <$> fetchAllTaggedPosts p XML xs
           where
             run s =
-              fromList [ (unVAL $ md5 `rget` r,
-                          unVAL $ file_url `rget` r) | Right r ← s ]
+              fromList [ (unVAL $ (Proxy ∷ Proxy "md5") `rget` r,
+                          unVAL $ (Proxy ∷ Proxy "file_url") `rget` r)
+                       | Right r ← s ]
 
     g ← f Gelbooru
     i ← f Ichijou
@@ -57,7 +58,7 @@ downloadTo fp xs = doesDirectoryExist fp >>= \case
         fs = Prelude.filter notInFiles [ (snd x, mkFp x) | x ← assocs ls ]
         lfs = show $ length fs
     ds ← atomically newTChan
-    got ← newTVarIO 0
+    got ← newTVarIO (0 ∷ Integer)
     let loop = atomically (readTChan ds) >>= \case
           EndOfQueue → putStrLn "Done."
           x → do
@@ -75,7 +76,8 @@ fetchImageLinks xs = do
   let f p = Prelude.map getInfo <$> fetchAllTaggedPosts p XML xs
         where
           getInfo (Left (PF m)) = Left . PF $ unwords [show p, m]
-          getInfo (Right r) = return . unVAL $ file_url `rget` r
+          getInfo (Right r) =
+            return . unVAL $ (Proxy ∷ Proxy "file_url") `rget` r
   (g, i, k, s, y) ← runConcurrently $ (,,,,)
                     <$> Concurrently (f Gelbooru)
                     <*> Concurrently (f Ichijou)
