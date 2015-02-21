@@ -92,5 +92,5 @@ help = unlines $
   , ""
   , "Downloads the files with the given tags to the given directory."
   , "Naming scheme is md5.originalextension"
-  , "The dowloader will skip files it already sees downloaded, by filename."
+  , "The downloader will skip files it already sees downloaded, by filename."
   ]
