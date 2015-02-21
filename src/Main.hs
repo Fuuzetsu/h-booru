@@ -2,10 +2,12 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE DataKinds #-}
+{-# OPTIONS_GHC -fcontext-stack=100 #-}
 module Main where
 
-import Control.Applicative ((<$>))
+import Control.Applicative ((<$>), (<*>))
 import Control.Concurrent (forkIO)
+import Control.Concurrent.Async
 import Control.Concurrent.STM
 import Control.Monad (void, filterM)
 import Data.Map
@@ -74,11 +76,12 @@ fetchImageLinks xs = do
         where
           getInfo (Left (PF m)) = Left . PF $ unwords [show p, m]
           getInfo (Right r) = return . unVAL $ file_url `rget` r
-  g ← f Gelbooru
-  i ← f Ichijou
-  k ← f Konachan
-  s ← f Safebooru
-  y ← f Yandere
+  (g, i, k, s, y) ← runConcurrently $ (,,,,)
+                    <$> Concurrently (f Gelbooru)
+                    <*> Concurrently (f Ichijou)
+                    <*> Concurrently (f Konachan)
+                    <*> Concurrently (f Safebooru)
+                    <*> Concurrently (f Yandere)
   let ls = g <> i <> k <> s <> y
   return $ length ls `seq` ls
 
